@@ -1,0 +1,11 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build artifacts
+**/bin/
+**/obj/
+
+# Environment files
+frontend/babel-ui/.env*
