@@ -9,12 +9,6 @@ Local dev: React runs on localhost:5173, backend on localhost:5240.
 
 Connected via: .env.local in frontend and CORS policy in backend.
 
-Version control: GitHub repo named BabelProgram.
-
 Hosting plan: Frontend will be deployed via AWS Amplify, backend via AWS App Runner or Elastic Beanstalk.
 
 Database (planned): Amazon RDS with EF Core integration.
-
-IDE: Visual Studio 2022 for backend, terminal/VSC for frontend.
-
-Project goal: Teachers can create profiles and teach English or other languages to students.
