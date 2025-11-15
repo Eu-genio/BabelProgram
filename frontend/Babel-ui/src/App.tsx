@@ -1,42 +1,38 @@
 import { useEffect, useState } from "react";
-import { getHealth } from "./lib/api"; import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import { getHealth } from "./lib/api";
 import './App.css'
+import Navbar from "./components/navbar";
+import AppRoutes from "./routes/AppRoutes";
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
+const Login = () => <h2>Login Page</h2>
+const About = () => <h2>About Page</h2>
+const Contact = () => <h2>Contact Page</h2>
 function App() {
   const [count, setCount] = useState(0)
   const [status, setStatus] = useState("loading");
-
     useEffect(() => {
         getHealth()
             .then(data => setStatus(data.status))
             .catch(() => setStatus("error"));
     }, []);
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+
+    return (
+  <>
+  <Router>
+    <Navbar />
+    <AppRoutes />
+  </Router>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
         <p>API status: {status}</p>;
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  </>
+
+  );
 }
 
 export default App;
