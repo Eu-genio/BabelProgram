@@ -1,20 +1,31 @@
+using Babel.Api.Modules.Users.Application;
+using Babel.Api.Shared.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnection")
+    ?? "Data Source=babel.db"; // fallback simple SQLite file
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(connectionString));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173") // Vite dev server
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
+
 builder.Services.AddControllers();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
-app.UseCors("AllowFrontend"); // Apply the CORS policy
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
 
 app.MapControllers();

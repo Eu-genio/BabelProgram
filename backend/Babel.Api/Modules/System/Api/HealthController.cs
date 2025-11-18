@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Babel.Api.Controllers
+namespace Babel.Api.Modules.System.Api
 {
     [ApiController]
     [Route("api/[controller]")]
