@@ -1,7 +1,3 @@
-Below is a clean, professional, plain-text description of your backend’s current structure, architectural approach, and implementation. You can place this directly into a README or documentation file. It avoids emojis and casual formatting, and it does not read like AI-generated marketing. It is structured in a way that engineers expect when reading a backend architecture overview.
-
----
-
 # Backend Architecture and Current Implementation
 
 ## Overview
