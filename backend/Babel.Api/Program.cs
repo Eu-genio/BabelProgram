@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserAppService>();
 
 var app = builder.Build();
 
