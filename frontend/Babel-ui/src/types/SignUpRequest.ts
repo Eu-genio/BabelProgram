@@ -1,7 +1,7 @@
-import type { UserRole } from "./userRole";
+import type { UserRole } from "./UserRole";
 
 export interface CreateUserRequest {
-    name: String;
-    email: String;
+    name: string;
+    email: string;
     role: UserRole;
 }

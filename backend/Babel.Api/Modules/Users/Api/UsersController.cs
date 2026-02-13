@@ -38,7 +38,7 @@ namespace Babel.Api.Modules.Users.Api
             return NoContent();
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<User>> UpdateById(int id, UpdateUserRequest request)
         {
             var userToUpdate = await _service.UpdateByIdAsync(id, request.Name, request.Email, request.Role);

@@ -20,7 +20,7 @@ namespace Babel.Api.Modules.Users.Application
             return await _db.Users.ToListAsync();
         }
 
-        public async Task<User> CreateAsync(string email, string name, UserRole role)
+        public async Task<User> CreateAsync(string name, string email, UserRole role)
         {
             var user = new User
             {

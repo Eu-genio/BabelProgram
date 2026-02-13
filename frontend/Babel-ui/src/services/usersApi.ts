@@ -1,4 +1,4 @@
-import type { CreateUserRequest } from "../types/CreateUserRequest"
+import type { CreateUserRequest } from "../types/SignUpRequest"
 import type { UserResponse } from "../types/UserResponse";
 
 const base = import.meta.env.VITE_API_BASE_URL; // comes from .env.local
@@ -13,11 +13,31 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
     const res = await fetch(input, init);
     if(!res.ok) {
         const text = await res.text().catch(() => "");
-        throw new Error(text || 'HTTP ${res.status}');
+        throw new Error(text || `HTTP ${res.status}`);
     }
     return res.json() as Promise<T>;
 }
     
 export function getUsers() {
-  return http<UserResponse[]>('${base}/api/users');
+  return http<UserResponse[]>(`${base}/api/users`);
+}
+
+export async function createUser(payload: CreateUserRequest) {
+    return http<UserResponse>(`${base}/api/users`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+        });
+}
+
+export async function updateUser(id: number, payload: CreateUserRequest) {
+    return http<UserResponse>(`${base}/api/users/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+    });
+}
+
+export function deleteUser(id: number) {
+    return http<void>(`${base}/api/users/${id}`, { method: "DELETE" });
 }
