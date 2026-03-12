@@ -7,8 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Babel.Api.Modules.Assets.Application;
+using Babel.Api.Modules.Assets.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("JWT Key not configured");
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? throw new InvalidOperationException("JWT Issuer not configured");
+
+var jwtAudience = builder.Configuration["Jwt:Audience"]
+    ?? throw new InvalidOperationException("JWT Audience not configured");
 
 var connectionString = builder.Configuration
     .GetConnectionString("DefaultConnection")
@@ -21,8 +32,19 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+var dbProvider = builder.Configuration["Database:Provider"] ?? "sqlite";
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+{
+    if (dbProvider == "postgres")
+    {
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        options.UseSqlite(connectionString);
+    }
+});
 
 builder.Services.AddCors(options =>
 {
@@ -37,6 +59,8 @@ builder.Services.AddScoped<UserAppService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<PasswordHasher>();
+builder.Services.AddScoped<AssetRepository>();
+builder.Services.AddScoped<AssetService>();
 
 builder.Services
 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,12 +73,10 @@ builder.Services
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
 
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-        )
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 

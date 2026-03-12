@@ -59,7 +59,7 @@ namespace Babel.Api.Modules.Auth.Api
     public record RegisterRequest(
         string Name,
         string Email,
-        string Password;
+        string Password);
 
     public record LoginRequest(
         string Email,
