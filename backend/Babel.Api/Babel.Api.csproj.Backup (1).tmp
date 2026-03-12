@@ -8,13 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Modules\Auth\Api\" />
+    <Folder Include="Modules\Auth\Domain\" />
+    <Folder Include="Modules\Auth\Infastructure\" />
     <Folder Include="Modules\Lessons\Api\" />
     <Folder Include="Modules\Users\Infrastructure\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.25" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />

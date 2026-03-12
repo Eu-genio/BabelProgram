@@ -1,4 +1,16 @@
+import { login } from "../api/authApi";
+import { useAuth } from "../auth/useAuth";
+
 function Login() {
+const { login: setAuth } = useAuth();
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const result = await login(email, password);
+
+  setAuth(result.token);
+};
   return (
     <div>
       <h1>Login</h1>
