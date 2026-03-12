@@ -35,7 +35,7 @@ namespace Babel.Api.Modules.Auth.Api
                 return Unauthorized();
             return Ok(user);
         }
-
+        
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponse>> Register(RegisterRequest req)
         {
@@ -43,7 +43,7 @@ namespace Babel.Api.Modules.Auth.Api
                 req.Name,
                 req.Email,
                 req.Password,
-                req.Role);
+                UserRole.Trader);
             return Ok(new AuthResponse (token));
         }
 
@@ -59,8 +59,7 @@ namespace Babel.Api.Modules.Auth.Api
     public record RegisterRequest(
         string Name,
         string Email,
-        string Password,
-        UserRole Role);
+        string Password;
 
     public record LoginRequest(
         string Email,

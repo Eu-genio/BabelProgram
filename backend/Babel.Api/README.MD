@@ -135,4 +135,22 @@ This structure ensures that the backend enforces business rules internally while
 
 # Summary
 
-The backend now has a functional EF Core setup with SQLite, migrations, domain models, and a correctly structured modular monolith architecture. This provides a scalable, maintainable foundation for building additional features such as authentication, language modules, lessons, and user progress tracking. The structure encourages clean boundaries, proper separation of concerns, and straightforward future expansion.
+The backend provides the foundation for a financial trading simulator.
+
+Current implemented features:
+
+• Authentication (JWT)
+• User management
+• Modular monolith architecture
+• EF Core persistence
+
+Planned modules:
+
+Assets
+MarketData
+Portfolios
+Trades
+News
+AITrading
+
+These modules will support simulated trading using real market price data.

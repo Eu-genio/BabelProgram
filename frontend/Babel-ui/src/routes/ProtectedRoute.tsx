@@ -1,10 +1,15 @@
-import { useContext } from "react";
-import { AuthContext } from "../auth/AuthContext";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
+import type { JSX } from "react";
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
+export default function ProtectedRoute({
+  children
+}: {
+  children: JSX.Element;
+}) {
+  const { user } = useAuth();
 
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  if (!user) return <Navigate to="/login" />;
 
-  return ctx;
+  return children;
 }

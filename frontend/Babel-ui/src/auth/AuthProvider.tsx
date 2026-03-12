@@ -28,7 +28,7 @@ function logout() {
 }
 
 return (
-    <AuthContext.Provider value = {{ user, tokenn, login, logout }}>
+    <AuthContext.Provider value = {{ user, token, login, logout }}>
         {children}
     </AuthContext.Provider>
     );
