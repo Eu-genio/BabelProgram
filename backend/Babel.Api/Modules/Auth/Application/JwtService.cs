@@ -26,7 +26,7 @@ namespace Babel.Api.Modules.Auth.Application
             new Claim(ClaimTypes.Role, user.Role.ToString())};
 
             var token = new JwtSecurityToken(issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:audience"],
+                audience: _config["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: creds);

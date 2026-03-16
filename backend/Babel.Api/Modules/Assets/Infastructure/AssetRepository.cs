@@ -33,5 +33,18 @@ namespace Babel.Api.Modules.Assets.Infrastructure
 
             await _db.SaveChangesAsync(); 
         }
+
+        public async Task<List<Asset>> SearchAsync(string query)
+        {
+            query = query.ToUpper();
+
+            return await _db.Assets
+                .Where(a =>
+                    a.IsActive &&
+                    (a.Symbol.Contains(query) ||
+                     a.Name.ToUpper().Contains(query)))
+                .OrderBy(a => a.Symbol)
+                .ToListAsync();
+        }
     }
 }

@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\Lessons\Api\" />
     <Folder Include="Modules\Users\Infrastructure\" />
   </ItemGroup>
 

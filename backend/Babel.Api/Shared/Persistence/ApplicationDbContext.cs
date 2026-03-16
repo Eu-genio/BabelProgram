@@ -1,8 +1,10 @@
+using Babel.Api.Modules.Assets.Domain;
+using Babel.Api.Modules.Assets.Infrastructure;
+using Babel.Api.Modules.Portfolios.Domain;
+using Babel.Api.Modules.Portfolios.Infrastructure.Configurations;
 using Babel.Api.Modules.Users.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using Babel.Api.Modules.Assets.Domain;
-
 namespace Babel.Api.Shared.Persistence
 {
     public class ApplicationDbContext : DbContext
@@ -14,5 +16,16 @@ namespace Babel.Api.Shared.Persistence
         public DbSet<User> Users => Set<User>();
         public DbSet<Asset> Assets => Set<Asset>();
         // Later you can override OnModelCreating for custom config.
+        public DbSet<Portfolio> Portfolios => Set<Portfolio>();
+        public DbSet<PortfolioHolding> PortfolioHoldings => Set<PortfolioHolding>();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new AssetConfiguration());
+            modelBuilder.ApplyConfiguration(new PortfolioConfiguration());
+            modelBuilder.ApplyConfiguration(new PortfolioHoldingConfiguration());
+        }
     }
 }

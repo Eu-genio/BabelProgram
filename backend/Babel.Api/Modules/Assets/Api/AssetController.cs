@@ -33,6 +33,17 @@ namespace Babel.Api.Modules.Assets.Api
             return Ok(asset);
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Asset>>> Search([FromQuery] string query)
+        {
+            if (query == null)
+                return BadRequest("Query is required");
+
+            var result = await _service.SearchAsync(query);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Asset>> Create(CreateAssetRequest request)
         {

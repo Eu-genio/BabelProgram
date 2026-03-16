@@ -24,9 +24,16 @@ namespace Babel.Api.Modules.Assets.Application
 
         public async Task<Asset> CreateAsync(string symbol, string name, AssetType type, string exchange)
         {
+            symbol = symbol.ToUpper();
+
+            var existing = await _repo.GetBySymbolAsync(symbol);
+
+            if (existing != null)
+                throw new InvalidOperationException("Asset already exists");
+
             var asset = new Asset
             {
-                Symbol = symbol.ToUpper(),
+                Symbol = symbol,
                 Name = name,
                 Type = type,
                 Exchange = exchange
@@ -35,6 +42,11 @@ namespace Babel.Api.Modules.Assets.Application
             await _repo.AddAsync(asset);
 
             return asset;
+        }
+
+        public Task<List<Asset>> SearchAsync(string query)
+        {
+            return _repo.SearchAsync(query);
         }
     }
 }

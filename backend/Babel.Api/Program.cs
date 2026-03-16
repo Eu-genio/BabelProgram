@@ -1,5 +1,11 @@
+using Babel.Api.Modules.Assets.Application;
+using Babel.Api.Modules.Assets.Infrastructure;
 using Babel.Api.Modules.Auth.Api;
 using Babel.Api.Modules.Auth.Application;
+using Babel.Api.Modules.MarketData.Application;
+using Babel.Api.Modules.MarketData.Infrastructure;
+using Babel.Api.Modules.Portfolios.Application;
+using Babel.Api.Modules.Portfolios.Infrastructure;
 using Babel.Api.Modules.Users.Application;
 using Babel.Api.Shared.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,8 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
-using Babel.Api.Modules.Assets.Application;
-using Babel.Api.Modules.Assets.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +65,11 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddScoped<AssetRepository>();
 builder.Services.AddScoped<AssetService>();
+builder.Services.AddScoped<IMarketDataProvider, MockMarketDataProvider>();
+builder.Services.AddScoped<MarketDataService>();
+builder.Services.AddScoped<PortfolioRepository>();
+builder.Services.AddScoped<PortfolioService>();
+
 
 builder.Services
 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
