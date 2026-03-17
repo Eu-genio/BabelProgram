@@ -2,6 +2,7 @@ using Babel.Api.Modules.Assets.Domain;
 using Babel.Api.Modules.Assets.Infrastructure;
 using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Modules.Portfolios.Infrastructure.Configurations;
+using Babel.Api.Modules.Trades.Domain;
 using Babel.Api.Modules.Users.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Babel.Api.Shared.Persistence
         // Later you can override OnModelCreating for custom config.
         public DbSet<Portfolio> Portfolios => Set<Portfolio>();
         public DbSet<PortfolioHolding> PortfolioHoldings => Set<PortfolioHolding>();
+        public DbSet<Trade> Trades => Set<Trade>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

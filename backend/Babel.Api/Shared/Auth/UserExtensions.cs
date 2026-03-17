@@ -6,7 +6,7 @@ public static class UserExtensions
 {
     public static int GetUserId(this ClaimsPrincipal user)
     {
-        var userIdClaim = user.FindFirst("sub")?.Value;
+        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrWhiteSpace(userIdClaim))
             throw new UnauthorizedAccessException("User id claim is missing.");

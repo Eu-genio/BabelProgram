@@ -7,6 +7,5 @@
         public int AssetId { get; set; }
         public decimal Quantity { get; set; }
         public decimal AverageCost { get; set; }
-
-    }
+        public Portfolio Portfolio { get; set; } = null!;    }
 }

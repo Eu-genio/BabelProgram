@@ -17,7 +17,7 @@ public class PortfolioHoldingConfiguration : IEntityTypeConfiguration<PortfolioH
 
         builder.Property(x => x.AverageCost)
             .HasPrecision(18, 2);
-
+        //Indexes
         builder.HasIndex(x => new { x.PortfolioId, x.AssetId })
             .IsUnique();
     }

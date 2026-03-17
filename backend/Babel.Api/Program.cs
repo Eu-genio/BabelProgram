@@ -1,12 +1,12 @@
 using Babel.Api.Modules.Assets.Application;
 using Babel.Api.Modules.Assets.Infrastructure;
-using Babel.Api.Modules.Auth.Api;
 using Babel.Api.Modules.Auth.Application;
 using Babel.Api.Modules.MarketData.Application;
 using Babel.Api.Modules.MarketData.Infrastructure;
 using Babel.Api.Modules.Portfolios.Application;
 using Babel.Api.Modules.Portfolios.Infrastructure;
 using Babel.Api.Modules.Users.Application;
+using Babel.Api.Shared.Auth;
 using Babel.Api.Shared.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

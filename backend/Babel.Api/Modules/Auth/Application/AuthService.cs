@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Babel.Api.Shared.Persistence;
 using Babel.Api.Modules.Users.Domain;
+using Babel.Api.Shared.Auth;
 
 namespace Babel.Api.Modules.Auth.Application
 {
