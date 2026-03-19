@@ -3,6 +3,8 @@ using Babel.Api.Modules.Assets.Infrastructure;
 using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Modules.Portfolios.Infrastructure.Configurations;
 using Babel.Api.Modules.Trades.Domain;
+using Babel.Api.Modules.Trades.Infrastructure;
+using Babel.Api.Modules.Trades.Infrastructure.Configurations;
 using Babel.Api.Modules.Users.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -28,6 +30,8 @@ namespace Babel.Api.Shared.Persistence
             modelBuilder.ApplyConfiguration(new AssetConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioHoldingConfiguration());
+            modelBuilder.ApplyConfiguration(new TradeConfiguration());
+
         }
     }
 }

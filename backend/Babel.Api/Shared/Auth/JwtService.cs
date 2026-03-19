@@ -5,7 +5,7 @@ using Babel.Api.Modules.Users.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Babel.Api.Modules.Auth.Infrastructure
+namespace Babel.Api.Shared.Auth
 {
     public class JwtService
     {

@@ -50,8 +50,7 @@ namespace Babel.Api.Modules.Portfolios.Infrastructure
 
         public async Task AddHoldingAsync(PortfolioHolding holding)
         {
-            _db.PortfolioHoldings.Add(holding);
-            await _db.SaveChangesAsync();
+            await _db.PortfolioHoldings.AddAsync(holding);
         }
         public async Task SaveChangesAsync()
         {

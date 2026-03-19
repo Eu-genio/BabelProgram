@@ -4,8 +4,6 @@ using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Modules.Portfolios.Infrastructure;
 using Babel.Api.Modules.Trades.Domain;
 using Babel.Api.Modules.Trades.Infrastructure;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Babel.Api.Modules.Trades.Application
 {
@@ -35,7 +33,7 @@ namespace Babel.Api.Modules.Trades.Application
                 ?? throw new ArgumentException("Asset not found.");
 
             var quote = await _marketData.GetQuoteAsync(symbol)
-                ?? throw new Exception("Prive unavailable.");
+                ?? throw new Exception("Price unavailable.");
             var price = quote.Price;
             var cost = quantity * price;
 
@@ -68,18 +66,17 @@ namespace Babel.Api.Modules.Trades.Application
             }
 
             portfolio.CashBalance -= cost;
-            await _portfolioRepo.SaveChangesAsync();
 
             var trade = new Trade
             {
                 PortfolioId = portfolioId,
                 AssetId = asset.Id,
                 Side = TradeSide.Buy,
-                Quantity = holding.Quantity,
+                Quantity = quantity,
                 Price = price,
                 TotalAmount = cost
             };
-
+            await _portfolioRepo.SaveChangesAsync();
             await _tradeRepo.AddAsync(trade);
             return trade;
         }
@@ -92,7 +89,7 @@ namespace Babel.Api.Modules.Trades.Application
             var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
               ?? throw new Exception("Portfolio not found.");
 
-            var asset = _assetRepo.GetBySymbolAsync(symbol)
+            var asset = await _assetRepo.GetBySymbolAsync(symbol)
                 ?? throw new Exception("Asset not found.");
 
             var holding = await _portfolioRepo.GetHoldingAsync(portfolio.Id, asset.Id)
@@ -125,6 +122,7 @@ namespace Babel.Api.Modules.Trades.Application
                 TotalAmount = proceeds
             };
 
+            await _portfolioRepo.SaveChangesAsync();
             await _tradeRepo.AddAsync(trade);
             return trade;
 

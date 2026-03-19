@@ -19,7 +19,7 @@ namespace Babel.Api.Modules.Trades.Api
         public async Task<IActionResult> Buy([FromBody] TradeRequest req)
         {
             var userId = User.GetUserId();
-            var trade = _tradeService.BuyAsync(userId, req.portfolioId, req.symbol, req.quantity);
+            var trade = await _tradeService.BuyAsync(userId, req.PortfolioId, req.Symbol, req.Quantity);
             return Ok(trade);
         }
 
@@ -27,11 +27,11 @@ namespace Babel.Api.Modules.Trades.Api
         public async Task<IActionResult> Sell([FromBody] TradeRequest req)
         {
             var userId = User.GetUserId();
-            var trade = await _tradeService.SellAsync(userId, req.portfolioId, req.symbol, req.quantity);
+            var trade = await _tradeService.SellAsync(userId, req.PortfolioId, req.Symbol, req.Quantity);
 
             return Ok(trade);
         }
 
-        public record TradeRequest(int portfolioId, string symbol, decimal quantity);
+        public record TradeRequest(int PortfolioId, string Symbol, decimal Quantity);
     }
 }

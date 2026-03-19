@@ -5,6 +5,8 @@ using Babel.Api.Modules.MarketData.Application;
 using Babel.Api.Modules.MarketData.Infrastructure;
 using Babel.Api.Modules.Portfolios.Application;
 using Babel.Api.Modules.Portfolios.Infrastructure;
+using Babel.Api.Modules.Trades.Application;
+using Babel.Api.Modules.Trades.Infrastructure;
 using Babel.Api.Modules.Users.Application;
 using Babel.Api.Shared.Auth;
 using Babel.Api.Shared.Persistence;
@@ -58,7 +60,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-builder.Services.AddControllers();
 builder.Services.AddScoped<UserAppService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
@@ -69,7 +70,8 @@ builder.Services.AddScoped<IMarketDataProvider, MockMarketDataProvider>();
 builder.Services.AddScoped<MarketDataService>();
 builder.Services.AddScoped<PortfolioRepository>();
 builder.Services.AddScoped<PortfolioService>();
-
+builder.Services.AddScoped<TradeRepository>();
+builder.Services.AddScoped<TradeService>();
 
 builder.Services
 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

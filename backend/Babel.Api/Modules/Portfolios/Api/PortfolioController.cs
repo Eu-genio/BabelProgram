@@ -1,11 +1,12 @@
 ﻿using Babel.Api.Modules.Portfolios.Application;
 using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Shared.Auth;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Babel.Api.Modules.Portfolios.Api
 {
+    [Authorize]
     [ApiController]
     [Route("api/portfolios")]
     public class PortfolioController : ControllerBase
