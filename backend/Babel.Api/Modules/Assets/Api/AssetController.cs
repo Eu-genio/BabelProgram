@@ -1,5 +1,7 @@
 ﻿using Babel.Api.Modules.Assets.Application;
 using Babel.Api.Modules.Assets.Domain;
+using Babel.Api.Modules.Portfolios.Application.DTOs;
+using Babel.Api.Shared.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Babel.Api.Modules.Assets.Api

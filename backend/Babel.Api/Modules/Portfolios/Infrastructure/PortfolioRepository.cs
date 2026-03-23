@@ -61,5 +61,11 @@ namespace Babel.Api.Modules.Portfolios.Infrastructure
         {
             _db.PortfolioHoldings.Remove(holding);
         }
+
+        public async Task<Portfolio?> GetByIdWithHoldingsAsync(int portfolioId, int userId)
+        {
+            return await _db.Portfolios.Include(x => x.Holdings).FirstOrDefaultAsync(p => p.Id == portfolioId && p.UserId == userId);
+        }
+
     }
 }

@@ -44,6 +44,15 @@ namespace Babel.Api.Modules.Assets.Application
             return asset;
         }
 
+        public Task<Asset?> GetByIdAsync(int assetId)
+        {
+            var asset = _repo.GetByIdAsync(assetId);
+
+            if (asset == null)
+                throw new Exception("Asset does not exist.");
+            return asset;
+        }
+
         public Task<List<Asset>> SearchAsync(string query)
         {
             return _repo.SearchAsync(query);

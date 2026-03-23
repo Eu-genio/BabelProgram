@@ -46,5 +46,10 @@ namespace Babel.Api.Modules.Assets.Infrastructure
                 .OrderBy(a => a.Symbol)
                 .ToListAsync();
         }
+
+        public async Task<Asset?> GetByIdAsync(int assetId)
+        {
+            return await _db.Assets.FindAsync(assetId);
+        }
     }
 }

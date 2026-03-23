@@ -125,7 +125,32 @@ namespace Babel.Api.Modules.Trades.Application
             await _portfolioRepo.SaveChangesAsync();
             await _tradeRepo.AddAsync(trade);
             return trade;
+        }
 
+        public Task<List<Trade>> GetPortfolioTradesAsync(int portfolioId)
+        {
+            return _tradeRepo.GetByPortfolioIdAsync(portfolioId);
+        }
+
+        public async Task<decimal> GetPortfolioValueAsync(int userId, int portfolioId)
+        {
+            var portfolio = await _portfolioRepo.GetByIdWithHoldingsAsync(portfolioId, userId)
+                ?? throw new Exception("Portfolio not found.");
+            decimal total = portfolio.CashBalance;
+
+            foreach(var holding in portfolio.Holdings)
+            {
+                var asset = await _assetRepo.GetByIdAsync(holding.AssetId);
+
+                var quote = await _marketData.GetQuoteAsync(asset.Symbol);
+
+                if (quote != null)
+                {
+                    total += holding.Quantity * quote.Price;
+                }
+            }
+
+            return total;
         }
     }
 }
