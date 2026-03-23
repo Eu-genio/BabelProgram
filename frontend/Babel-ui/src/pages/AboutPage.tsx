@@ -92,11 +92,11 @@ function UsersPage() {
 
       <ul>
         <li>
-        {usersList.map((u) => (
-          <li key={u.id}>
-            {u.id} - {u.name} - {u.email} - {u.role}
-          </li>
-        ))}
+          {usersList.map((u) => (
+            <li key={u.id}>
+              {u.id} - {u.name} - {u.email} - {u.role}
+            </li>
+          ))}
         </li>
       </ul>
     </div>
