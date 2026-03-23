@@ -1,15 +1,23 @@
 import { Outlet, Link } from "react-router-dom";
+import "./layout.css";
 
 export default function AppLayout() {
   return (
-    <div>
-      <nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
-        <Link to="/" style={{ marginRight: "1rem" }}>Home</Link>
-        <Link to="/projects" style={{ marginRight: "1rem" }}>Projects</Link>
-        <Link to="/trading">Trading</Link>
-      </nav>
+    <div className="app-container">
+      <header className="navbar">
+        <div className="nav-inner">
+          <div className="nav-left">
+            <Link to="/" className="nav-link">Eugenio</Link>
+          </div>
 
-      <main style={{ padding: "2rem" }}>
+          <div className="nav-right">
+            <Link to="/projects" className="nav-link">Projects</Link>
+            <Link to="/trading" className="nav-link">Trading</Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="main-content">
         <Outlet />
       </main>
     </div>

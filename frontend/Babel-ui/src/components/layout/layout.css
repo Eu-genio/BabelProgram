@@ -1,0 +1,39 @@
+.app-container {
+  width: 100%;
+}
+
+.navbar {
+  border-bottom: 1px solid #e5e5e5;
+  padding: 1rem 0;
+  outline: 1px solid red;
+
+}
+
+/* THIS controls width */
+.nav-inner,
+.main-content {
+  max-width: 900px;   /* match your page width */
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Navbar layout */
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left {
+  font-weight: 600;
+}
+
+.nav-right {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+}
