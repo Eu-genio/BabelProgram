@@ -1,7 +1,9 @@
 import { Outlet, Link } from "react-router-dom";
 import "./layout.css";
+import { useAuth } from "../../auth/useAuth";
 
 export default function AppLayout() {
+  const {logout} = useAuth();
   return (
     <div className="app-container">
       <header className="navbar">
@@ -14,6 +16,7 @@ export default function AppLayout() {
             <Link to="/projects" className="nav-link">Projects</Link>
             <Link to="/trading" className="nav-link">Trading</Link>
           </div>
+          <button onClick={logout}>Logout</button>
         </div>
       </header>
 

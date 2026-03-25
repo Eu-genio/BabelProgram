@@ -1,4 +1,4 @@
-export default function HoldingsTable() {
+export default function HoldingsTable({ data }: any) {
   return (
     <div className="table-section">
       <h2>Holdings</h2>
@@ -14,12 +14,14 @@ export default function HoldingsTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>AAPL</td>
-            <td>10</td>
-            <td>$150</td>
-            <td>$1500</td>
-          </tr>
+          {data.map((h: any) => (
+            <tr key={h.assetId}>
+              <td>{h.symbol}</td>
+              <td>{h.quantity}</td>
+              <td>${h.price}</td>
+              <td>${h.value}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { getMe } from "../api/authApi";
+import { getMe } from "../lib/api/authApi";
 import type { AuthUser } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

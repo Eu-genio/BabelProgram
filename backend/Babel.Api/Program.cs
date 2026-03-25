@@ -94,7 +94,8 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontend");
+app.UseCors(policy =>
+  policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseAuthentication();
 app.UseAuthorization();

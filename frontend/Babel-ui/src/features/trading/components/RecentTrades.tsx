@@ -1,4 +1,4 @@
-export default function RecentTrades() {
+export default function RecentTrades({ data }: any) {
   return (
     <div className="table-section">
       <h2>Recent Trades</h2>
@@ -14,12 +14,14 @@ export default function RecentTrades() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>AAPL</td>
-            <td>Buy</td>
-            <td>10</td>
-            <td>$150</td>
-          </tr>
+          {data.map((t: any) => (
+            <tr key={t.id}>
+              <td>{t.symbol}</td>
+              <td>{t.side}</td>
+              <td>{t.quantity}</td>
+              <td>${t.price}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

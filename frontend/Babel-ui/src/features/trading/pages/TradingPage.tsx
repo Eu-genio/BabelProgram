@@ -1,18 +1,31 @@
+import { useEffect, useState } from "react";
 import PortfolioSummary from "../components/PortfolioSummary";
 import HoldingsTable from "../components/HoldingsTable";
 import RecentTrades from "../components/RecentTrades";
-import "../trading.css";
+import { getDashboard } from "../../../lib/api/portfolioApi";
 
 export default function TradingPage() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDashboard(3) // hardcoded for now
+      .then(setData)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!data) return <p>Error loading dashboard</p>;
+
   return (
-    <div className="trading-container">
-      <h1 className="trading-title">Trading Dashboard</h1>
+    <div>
+      <h1>Trading Dashboard</h1>
 
-      <PortfolioSummary />
-
-      <HoldingsTable />
-
-      <RecentTrades />
+      <PortfolioSummary data={data} />
+      <HoldingsTable data={data.holdings} />
+      <RecentTrades data={data.recentTrades} />
     </div>
   );
 }

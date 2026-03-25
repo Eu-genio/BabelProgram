@@ -76,8 +76,8 @@ namespace Babel.Api.Modules.Trades.Application
                 Price = price,
                 TotalAmount = cost
             };
-            await _portfolioRepo.SaveChangesAsync();
             await _tradeRepo.AddAsync(trade);
+            await _portfolioRepo.SaveChangesAsync();
             return trade;
         }
 
@@ -121,9 +121,8 @@ namespace Babel.Api.Modules.Trades.Application
                 Price = price,
                 TotalAmount = proceeds
             };
-
-            await _portfolioRepo.SaveChangesAsync();
             await _tradeRepo.AddAsync(trade);
+            await _portfolioRepo.SaveChangesAsync();
             return trade;
         }
 
