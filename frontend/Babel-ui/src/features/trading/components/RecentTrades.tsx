@@ -1,4 +1,10 @@
-export default function RecentTrades({ data }: any) {
+import type { DashboardTrade } from "../../../lib/api/portfolioApi";
+
+type Props = {
+  data: DashboardTrade[];
+};
+
+export default function RecentTrades({ data }: Props) {
   return (
     <div className="table-section">
       <h2>Recent Trades</h2>
@@ -14,12 +20,12 @@ export default function RecentTrades({ data }: any) {
         </thead>
 
         <tbody>
-          {data.map((t: any) => (
+          {data.map((t) => (
             <tr key={t.id}>
               <td>{t.symbol}</td>
               <td>{t.side}</td>
               <td>{t.quantity}</td>
-              <td>${t.price}</td>
+              <td>${t.price.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>

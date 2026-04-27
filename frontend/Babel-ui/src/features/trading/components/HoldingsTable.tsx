@@ -1,4 +1,10 @@
-export default function HoldingsTable({ data }: any) {
+import type { DashboardHolding } from "../../../lib/api/portfolioApi";
+
+type Props = {
+  data: DashboardHolding[]; 
+};
+
+export default function HoldingsTable({ data }: Props) {
   return (
     <div className="table-section">
       <h2>Holdings</h2>
@@ -14,7 +20,7 @@ export default function HoldingsTable({ data }: any) {
         </thead>
 
         <tbody>
-          {data.map((h: any) => (
+          {data.map((h) => (
             <tr key={h.assetId}>
               <td>{h.symbol}</td>
               <td>{h.quantity}</td>

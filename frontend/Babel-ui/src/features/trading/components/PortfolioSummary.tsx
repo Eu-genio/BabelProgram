@@ -1,4 +1,10 @@
-export default function PortfolioSummary({ data }: any) {
+import type { PortfolioDashboardResponse } from "../../../lib/api/portfolioApi";
+
+type Props = {
+  data: PortfolioDashboardResponse;
+};
+
+export default function PortfolioSummary({ data }: Props) {
   return (
     <div className="summary-grid">
       <div className="summary-card">
