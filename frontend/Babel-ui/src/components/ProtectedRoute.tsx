@@ -1,11 +1,17 @@
+import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
+import { useAuth } from "../features/auth/context/AuthContext";
+import { isTokenExpired } from "../features/auth/utils/jwt";
 
-export default function ProtectedRoute({children}: any) {
-    const {token} = useAuth();
+type ProtectedRouteProps = {
+  children: ReactNode;
+};
 
-    if(!token) {
-        return <Navigate to="/login"/>;
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+    const { token } = useAuth();
+
+    if (!token || isTokenExpired(token)) {
+        return <Navigate to="/login" replace />;
     }
 
     return children;

@@ -33,12 +33,12 @@ namespace Babel.Api.Modules.Trades.Application
                 ?? throw new ArgumentException("Asset not found.");
 
             var quote = await _marketData.GetQuoteAsync(symbol)
-                ?? throw new Exception("Price unavailable.");
+                ?? throw new InvalidOperationException("Price unavailable.");
             var price = quote.Price;
             var cost = quantity * price;
 
             if(portfolio.CashBalance <  cost) 
-                throw new Exception("Not enough cash.");
+                throw new InvalidOperationException("Not enough cash.");
 
             var holding = await _portfolioRepo.GetHoldingAsync(portfolioId, asset.Id); ;
 
@@ -87,19 +87,19 @@ namespace Babel.Api.Modules.Trades.Application
                 throw new ArgumentException("Quantity must be positive.");
 
             var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
-              ?? throw new Exception("Portfolio not found.");
+              ?? throw new ArgumentException("Portfolio not found.");
 
             var asset = await _assetRepo.GetBySymbolAsync(symbol)
-                ?? throw new Exception("Asset not found.");
+                ?? throw new ArgumentException("Asset not found.");
 
             var holding = await _portfolioRepo.GetHoldingAsync(portfolio.Id, asset.Id)
-                ?? throw new Exception("Holding not found.");
+                ?? throw new ArgumentException("Holding not found.");
 
             if (holding.Quantity < quantity)
-                throw new Exception("You do not have enough shares to sell");
+                throw new InvalidOperationException("You do not have enough shares to sell");
 
             var quote = await _marketData.GetQuoteAsync(symbol)
-                ?? throw new Exception("Price unavailable");
+                ?? throw new InvalidOperationException("Price unavailable");
 
             var price = quote.Price;
             var proceeds = quantity * price;
@@ -134,7 +134,7 @@ namespace Babel.Api.Modules.Trades.Application
         public async Task<decimal> GetPortfolioValueAsync(int userId, int portfolioId)
         {
             var portfolio = await _portfolioRepo.GetByIdWithHoldingsAsync(portfolioId, userId)
-                ?? throw new Exception("Portfolio not found.");
+                ?? throw new ArgumentException("Portfolio not found.");
             decimal total = portfolio.CashBalance;
 
             foreach(var holding in portfolio.Holdings)

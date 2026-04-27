@@ -1,4 +1,14 @@
-const API_BASE = "http://localhost:5240/api"; // adjust if needed
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5240/api";
+
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
 
 export async function apiFetch<T>(
   url: string,
@@ -16,7 +26,23 @@ export async function apiFetch<T>(
   });
 
   if (!res.ok) {
-    throw new Error("API request failed");
+    let message = `API request failed (${res.status})`;
+
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (body?.error) {
+        message = body.error;
+      }
+    } catch {
+      // Ignore JSON parse errors and keep fallback message.
+    }
+
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      window.dispatchEvent(new Event("auth:session-expired"));
+    }
+
+    throw new ApiError(message, res.status);
   }
 
   return res.json();

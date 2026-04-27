@@ -1,38 +1,50 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { login as loginRequest } from "../../../lib/api/authApi";
+import { ApiError } from "../../../lib/api/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const res = await fetch("http://localhost:5240/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) {
-      alert("Login failed");
+    if (!email || !password) {
+      setError("Email and password are required.");
       return;
     }
 
-    const data = await res.json();
+    try {
+      setError(null);
+      setIsLoading(true);
+      const data = await loginRequest(email, password);
 
-    login(data.token);
-    window.location.href = "/trading";
+      login(data.token);
+      navigate("/trading");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Login failed. Check your credentials and try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div>
       <h1>Login</h1>
+      {error && <p>{error}</p>}
 
       <input
         placeholder="Email"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -44,7 +56,9 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogin} disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Login"}
+      </button>
     </div>
   );
 }

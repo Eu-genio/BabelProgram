@@ -27,7 +27,7 @@ namespace Babel.Api.Modules.Portfolios.Application
             var portfolio = await _repo.GetByIdWithHoldingsAsync(portfolioId, userId);
 
             if (portfolio == null)
-                throw new Exception("Portfolio not found");
+                throw new ArgumentException("Portfolio not found");
 
             return portfolio;
         }
@@ -54,7 +54,7 @@ namespace Babel.Api.Modules.Portfolios.Application
         public async Task<PortfolioDashboardDto> GetDashboardAsync(int userId, int portfolioId)
         {
             var portfolio = await _repo.GetByIdWithHoldingsAsync(portfolioId, userId)
-                ?? throw new Exception("Portfolio not found");
+                ?? throw new ArgumentException("Portfolio not found");
 
             var trades = await _tradeRepo.GetByPortfolioIdAsync(portfolioId);
 
@@ -65,7 +65,7 @@ namespace Babel.Api.Modules.Portfolios.Application
             foreach (var h in portfolio.Holdings)
             {
                 var asset = await _assetRepo.GetByIdAsync(h.AssetId)
-                    ?? throw new Exception("Asset not found");
+                    ?? throw new ArgumentException("Asset not found");
 
                 var quote = await _marketData.GetQuoteAsync(asset.Symbol);
 
@@ -89,7 +89,7 @@ namespace Babel.Api.Modules.Portfolios.Application
             foreach (var t in trades.Take(10))
             {
                 var asset = await _assetRepo.GetByIdAsync(t.AssetId)
-                    ?? throw new Exception("Asset not found");
+                    ?? throw new ArgumentException("Asset not found");
 
                 tradeDtos.Add(new TradeDto
                 {
