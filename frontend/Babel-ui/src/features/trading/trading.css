@@ -1,7 +1,13 @@
 .trading-title {
   margin-top: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 0.35rem;
   font-size: 2rem;
+}
+
+.trading-subtitle {
+  margin-top: 0;
+  margin-bottom: 1.4rem;
+  color: #666;
 }
 
 .summary-grid {
@@ -31,4 +37,67 @@ td {
   text-align: left;
   padding: 0.75rem;
   border-bottom: 1px solid #eee;
+}
+
+.trade-form-section {
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.trade-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  max-width: 22rem;
+}
+
+.trade-form input,
+.trade-form select {
+  padding: 0.5rem;
+  font: inherit;
+}
+
+.trade-form button {
+  margin-top: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.trade-form-error {
+  color: #b42318;
+  margin: 0;
+}
+
+.trade-form-success {
+  color: #027a48;
+  margin: 0;
+}
+
+.trade-form-hint,
+.trade-form-subhint {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.empty-portfolio-actions {
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.empty-portfolio-actions input {
+  padding: 0.5rem;
+  font: inherit;
+}
+
+.empty-portfolio-actions button {
+  width: fit-content;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
 }

@@ -6,12 +6,16 @@ export type PortfolioResponse = {
   cashBalance: number;
 };
 
+type CreatePortfolioRequest = {
+  name: string;
+};
+
 export type DashboardHolding = {
-  assetId: number;
   symbol: string;
   quantity: number;
-  price: number;
-  value: number;
+  averageCost: number;
+  currentPrice: number;
+  marketValue: number;
 };
 
 export type DashboardTrade = {
@@ -36,4 +40,11 @@ export function getMyPortfolios() {
 
 export function getDashboard(portfolioId: number) {
   return apiFetch<PortfolioDashboardResponse>(`/portfolios/${portfolioId}/dashboard`);
+}
+
+export function createPortfolio(payload: CreatePortfolioRequest) {
+  return apiFetch<PortfolioResponse>("/portfolios", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }

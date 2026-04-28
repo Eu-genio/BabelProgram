@@ -1,4 +1,5 @@
 import type { DashboardHolding } from "../../../lib/api/portfolioApi";
+import { formatCurrency, formatQuantity } from "../utils/format";
 
 type Props = {
   data: DashboardHolding[]; 
@@ -20,12 +21,17 @@ export default function HoldingsTable({ data }: Props) {
         </thead>
 
         <tbody>
+          {data.length === 0 && (
+            <tr>
+              <td colSpan={4}>No holdings yet. Place a buy trade to get started.</td>
+            </tr>
+          )}
           {data.map((h) => (
-            <tr key={h.assetId}>
+            <tr key={h.symbol}>
               <td>{h.symbol}</td>
-              <td>{h.quantity}</td>
-              <td>${h.price}</td>
-              <td>${h.value}</td>
+              <td>{formatQuantity(h.quantity)}</td>
+              <td>{formatCurrency(h.currentPrice)}</td>
+              <td>{formatCurrency(h.marketValue)}</td>
             </tr>
           ))}
         </tbody>
