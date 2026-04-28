@@ -4,6 +4,7 @@ import HomePage from "./features/home/pages/HomePage";
 import ProjectsPage from "./features/projects/pages/ProjectPage";
 import TradingPage from "./features/trading/pages/TradingPage";
 import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 export const router = createBrowserRouter([
   {
@@ -13,7 +14,8 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "projects", element: <ProjectsPage /> },
       { path: "trading", element: <ProtectedRoute><TradingPage /></ProtectedRoute> },
-      { path: "login", element: <LoginPage/>}
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
     ],
   },
 ]);

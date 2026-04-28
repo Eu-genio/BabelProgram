@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5240/api";
+import { resolveApiBase } from "./apiBase";
+
+const API_BASE = resolveApiBase();
 
 export class ApiError extends Error {
   status: number;

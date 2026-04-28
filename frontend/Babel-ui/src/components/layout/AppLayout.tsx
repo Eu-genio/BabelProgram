@@ -33,7 +33,10 @@ export default function AppLayout() {
                 </button>
               </>
             ) : (
-              <Link to="/login" className="nav-link">Login</Link>
+              <>
+                <Link to="/login" className="nav-link">Login</Link>
+                <Link to="/register" className="nav-link">Sign up</Link>
+              </>
             )}
           </div>
         </div>

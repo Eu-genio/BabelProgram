@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { login as loginRequest } from "../../../lib/api/authApi";
 import { ApiError } from "../../../lib/api/client";
+import "../auth.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,9 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
     if (!email || !password) {
       setError("Email and password are required.");
       return;
@@ -26,9 +29,9 @@ export default function LoginPage() {
 
       login(data.token);
       navigate("/trading");
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
       } else {
         setError("Login failed. Check your credentials and try again.");
       }
@@ -38,27 +41,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      {error && <p>{error}</p>}
+    <div className="auth-page">
+      <h1>Log in</h1>
 
-      <input
-        placeholder="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={handleSubmit} noValidate>
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className="auth-field">
+          <label htmlFor="login-email">Email</label>
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-      <button onClick={handleLogin} disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Login"}
-      </button>
+        <div className="auth-field">
+          <label htmlFor="login-password">Password</label>
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className="auth-actions">
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Log in"}
+          </button>
+        </div>
+      </form>
+
+      <p className="auth-footer">
+        Need an account? <Link to="/register">Sign up</Link>
+      </p>
     </div>
   );
 }

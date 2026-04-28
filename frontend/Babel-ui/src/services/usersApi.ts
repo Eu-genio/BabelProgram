@@ -1,10 +1,9 @@
-import type { CreateUserRequest } from "../types/SignUpRequest"
+import type { CreateUserRequest } from "../types/SignUpRequest";
 import type { UserResponse } from "../types/UserResponse";
-
-const base = import.meta.env.VITE_API_BASE_URL; // comes from .env.local
+import { resolveApiBase } from "../lib/api/apiBase";
 
 export async function getHealth() {
-    const res = await fetch(`${base}/api/health`);
+    const res = await fetch(`${resolveApiBase()}/health`);
     if (!res.ok) throw new Error("API error");
     return res.json() as Promise<{ status: string }>;
 }
@@ -19,11 +18,11 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
 }
     
 export function getUsers() {
-  return http<UserResponse[]>(`${base}/api/users`);
+  return http<UserResponse[]>(`${resolveApiBase()}/users`);
 }
 
 export async function createUser(payload: CreateUserRequest) {
-    return http<UserResponse>(`${base}/api/users`, {
+    return http<UserResponse>(`${resolveApiBase()}/users`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
@@ -31,7 +30,7 @@ export async function createUser(payload: CreateUserRequest) {
 }
 
 export async function updateUser(id: number, payload: CreateUserRequest) {
-    return http<UserResponse>(`${base}/api/users/${id}`, {
+    return http<UserResponse>(`${resolveApiBase()}/users/${id}`, {
         method: "PUT",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
@@ -39,5 +38,5 @@ export async function updateUser(id: number, payload: CreateUserRequest) {
 }
 
 export function deleteUser(id: number) {
-    return http<void>(`${base}/api/users/${id}`, { method: "DELETE" });
+    return http<void>(`${resolveApiBase()}/users/${id}`, { method: "DELETE" });
 }
