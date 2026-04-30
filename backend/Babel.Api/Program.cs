@@ -3,6 +3,8 @@ using Babel.Api.Modules.Assets.Infrastructure;
 using Babel.Api.Modules.Auth.Application;
 using Babel.Api.Modules.MarketData.Application;
 using Babel.Api.Modules.MarketData.Infrastructure;
+using Babel.Api.Modules.Market.Application;
+using Babel.Api.Modules.Market.Infrastructure;
 using Babel.Api.Modules.Portfolios.Application;
 using Babel.Api.Modules.Portfolios.Infrastructure;
 using Babel.Api.Modules.Trades.Application;
@@ -40,6 +42,7 @@ builder.Services
     });
 
 var dbProvider = builder.Configuration["Database:Provider"] ?? "sqlite";
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -69,6 +72,8 @@ builder.Services.AddScoped<AssetRepository>();
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<IMarketDataProvider, MockMarketDataProvider>();
 builder.Services.AddScoped<MarketDataService>();
+builder.Services.AddHttpClient<IMarketViewProvider, FinnhubMarketViewProvider>();
+builder.Services.AddScoped<MarketViewService>();
 builder.Services.AddScoped<PortfolioRepository>();
 builder.Services.AddScoped<PortfolioService>();
 builder.Services.AddScoped<TradeRepository>();
@@ -118,6 +123,12 @@ app.Use(async (context, next) =>
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = ex.Message }));
+    }
+    catch (HttpRequestException)
+    {
+        context.Response.StatusCode = StatusCodes.Status502BadGateway;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = "Unable to reach market data provider. Please try again." }));
     }
     catch
     {

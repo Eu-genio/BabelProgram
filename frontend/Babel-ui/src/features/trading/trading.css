@@ -83,6 +83,14 @@ td {
   font-size: 0.9rem;
 }
 
+.market-up {
+  color: #027a48;
+}
+
+.market-down {
+  color: #b42318;
+}
+
 .empty-portfolio-actions {
   max-width: 22rem;
   display: flex;

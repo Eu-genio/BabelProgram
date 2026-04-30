@@ -28,6 +28,7 @@ export default function AppLayout() {
                   {user?.email ?? "Signed in"}
                 </span>
                 <Link to="/trading" className="nav-link">Trading</Link>
+                <Link to="/market" className="nav-link">Market</Link>
                 <button onClick={handleLogout} className="nav-link nav-button">
                   Logout
                 </button>

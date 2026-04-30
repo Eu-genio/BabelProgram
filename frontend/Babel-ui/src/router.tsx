@@ -3,6 +3,7 @@ import AppLayout from "./components/layout/AppLayout";
 import HomePage from "./features/home/pages/HomePage";
 import ProjectsPage from "./features/projects/pages/ProjectPage";
 import TradingPage from "./features/trading/pages/TradingPage";
+import MarketPage from "./features/market/pages/MarketPage";
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "projects", element: <ProjectsPage /> },
       { path: "trading", element: <ProtectedRoute><TradingPage /></ProtectedRoute> },
+      { path: "market", element: <ProtectedRoute><MarketPage /></ProtectedRoute> },
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
     ],
