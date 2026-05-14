@@ -1,14 +1,16 @@
-﻿using Babel.Api.Modules.Assets.Application;
+﻿using System.Security.Claims;
+using Babel.Api.Modules.Assets.Application;
 using Babel.Api.Modules.Assets.Domain;
-using Babel.Api.Modules.Portfolios.Application.DTOs;
-using Babel.Api.Shared.Auth;
+using Babel.Api.Modules.Users.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Babel.Api.Modules.Assets.Api
 {
     [ApiController]
+    [Authorize]
     [Route("api/assets")]
-    public class AssetController : Controller
+    public class AssetController : ControllerBase
     {
         private readonly AssetService _service;
 
@@ -49,6 +51,12 @@ namespace Babel.Api.Modules.Assets.Api
         [HttpPost]
         public async Task<ActionResult<Asset>> Create(CreateAssetRequest request)
         {
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (!string.Equals(role, UserRole.Admin.ToString(), StringComparison.Ordinal))
+            {
+                return Forbid();
+            }
+
             var asset = await _service.CreateAsync(request.Symbol, request.Name, request.Type, request.Exchange);
 
             return Ok(asset);

@@ -100,6 +100,8 @@ builder.Services
 
 var app = builder.Build();
 
+var disableHttpsRedirect = app.Configuration.GetValue("Testing:DisableHttpsRedirect", false);
+
 app.Use(async (context, next) =>
 {
     try
@@ -143,7 +145,10 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseHttpsRedirection();
+if (!disableHttpsRedirect)
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapControllers();
 

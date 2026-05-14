@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Babel.Api.Shared.Auth;
 
@@ -6,7 +7,8 @@ public static class UserExtensions
 {
     public static int GetUserId(this ClaimsPrincipal user)
     {
-        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
         if (string.IsNullOrWhiteSpace(userIdClaim))
             throw new UnauthorizedAccessException("User id claim is missing.");

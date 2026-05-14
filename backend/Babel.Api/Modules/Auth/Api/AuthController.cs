@@ -24,7 +24,8 @@ namespace Babel.Api.Modules.Auth.Api
         [HttpGet("me")]
         public async Task<ActionResult<UserMeResponse>> Me([FromServices] ApplicationDbContext db)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if(userId == null) 
                 return Unauthorized();

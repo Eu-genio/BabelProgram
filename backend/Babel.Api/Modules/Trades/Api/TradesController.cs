@@ -31,10 +31,11 @@ namespace Babel.Api.Modules.Trades.Api
 
             return Ok(trade);
         }
-        [HttpGet("portfolio/{portfolioid}")]
+        [HttpGet("portfolio/{portfolioId:int}")]
         public async Task<ActionResult> GetTrades(int portfolioId)
         {
-            var trades = await _tradeService.GetPortfolioTradesAsync(portfolioId);
+            var userId = User.GetUserId();
+            var trades = await _tradeService.GetTradesForUserPortfolioAsync(userId, portfolioId);
             return Ok(trades);
         }
 

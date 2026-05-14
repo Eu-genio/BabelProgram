@@ -4,6 +4,8 @@ using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Modules.Portfolios.Infrastructure;
 using Babel.Api.Modules.Trades.Domain;
 using Babel.Api.Modules.Trades.Infrastructure;
+using Babel.Api.Shared.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Babel.Api.Modules.Trades.Application
 {
@@ -13,74 +15,91 @@ namespace Babel.Api.Modules.Trades.Application
         public readonly AssetRepository _assetRepo;
         public readonly TradeRepository _tradeRepo;
         private readonly IMarketDataProvider _marketData;
+        private readonly ApplicationDbContext _db;
 
-        public TradeService(PortfolioRepository portfolioRepo, AssetRepository assetRepo, TradeRepository tradeRepo, IMarketDataProvider marketData)
+        public TradeService(
+            PortfolioRepository portfolioRepo,
+            AssetRepository assetRepo,
+            TradeRepository tradeRepo,
+            IMarketDataProvider marketData,
+            ApplicationDbContext db)
         {
             _portfolioRepo = portfolioRepo;
             _assetRepo = assetRepo;
             _tradeRepo = tradeRepo;
             _marketData = marketData;
+            _db = db;
         }
 
         public async Task<Trade> BuyAsync(int userId, int portfolioId, string symbol, decimal quantity)
         {
             if (quantity <= 0) throw new ArgumentException("Quantity must be positive.");
 
-            var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
-                ?? throw new ArgumentException("Portfolio not found.");
-
-            var asset = await _assetRepo.GetBySymbolAsync(symbol)
-                ?? throw new ArgumentException("Asset not found.");
-
-            var quote = await _marketData.GetQuoteAsync(symbol)
-                ?? throw new InvalidOperationException("Price unavailable.");
-            var price = quote.Price;
-            var cost = quantity * price;
-
-            if(portfolio.CashBalance <  cost) 
-                throw new InvalidOperationException("Not enough cash.");
-
-            var holding = await _portfolioRepo.GetHoldingAsync(portfolioId, asset.Id); ;
-
-            if(holding is null)
+            await using var tx = await _db.Database.BeginTransactionAsync();
+            try
             {
-                holding = new PortfolioHolding
+                var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
+                    ?? throw new ArgumentException("Portfolio not found.");
+
+                var asset = await _assetRepo.GetBySymbolAsync(symbol)
+                    ?? throw new ArgumentException("Asset not found.");
+
+                var quote = await _marketData.GetQuoteAsync(symbol)
+                    ?? throw new InvalidOperationException("Price unavailable.");
+                var price = quote.Price;
+                var cost = quantity * price;
+
+                if (portfolio.CashBalance < cost)
+                    throw new InvalidOperationException("Not enough cash.");
+
+                var holding = await _portfolioRepo.GetHoldingAsync(portfolioId, asset.Id);
+
+                if (holding is null)
+                {
+                    holding = new PortfolioHolding
+                    {
+                        PortfolioId = portfolioId,
+                        AssetId = asset.Id,
+                        Quantity = quantity,
+                        AverageCost = price,
+                    };
+                    await _portfolioRepo.AddHoldingAsync(holding);
+                }
+                else
+                {
+                    var oldQty = holding.Quantity;
+                    var oldAvg = holding.AverageCost;
+
+                    var newQty = oldQty + quantity;
+                    var newAvg = ((oldAvg * oldQty) + cost) / newQty;
+
+                    holding.Quantity = newQty;
+                    holding.AverageCost = decimal.Round(newAvg, 2);
+                }
+
+                portfolio.CashBalance -= cost;
+
+                var trade = new Trade
                 {
                     PortfolioId = portfolioId,
                     AssetId = asset.Id,
+                    Side = TradeSide.Buy,
                     Quantity = quantity,
-                    AverageCost = price,
+                    Price = price,
+                    TotalAmount = cost,
+                    ExecutedAtUtc = DateTime.UtcNow,
+                    QuoteAsOfUtc = quote.RetrievedAtUtc
                 };
-                await _portfolioRepo.AddHoldingAsync(holding);
+                await _tradeRepo.AddAsync(trade);
+                await _portfolioRepo.SaveChangesAsync();
+                await tx.CommitAsync();
+                return trade;
             }
-            else
+            catch
             {
-                var oldQty = holding.Quantity;
-                var oldAvg = holding.AverageCost;
-
-                var newQty = oldQty + quantity;
-                var newAvg = ((oldAvg * oldQty) + cost) / newQty; 
-                
-                holding.Quantity = newQty;
-                holding.AverageCost = decimal.Round(newAvg, 2); ;
+                await tx.RollbackAsync();
+                throw;
             }
-
-            portfolio.CashBalance -= cost;
-
-            var trade = new Trade
-            {
-                PortfolioId = portfolioId,
-                AssetId = asset.Id,
-                Side = TradeSide.Buy,
-                Quantity = quantity,
-                Price = price,
-                TotalAmount = cost,
-                ExecutedAtUtc = DateTime.UtcNow,
-                QuoteAsOfUtc = quote.RetrievedAtUtc
-            };
-            await _tradeRepo.AddAsync(trade);
-            await _portfolioRepo.SaveChangesAsync();
-            return trade;
         }
 
         public async Task<Trade> SellAsync(int userId, int portfolioId, string symbol, decimal quantity)
@@ -88,51 +107,64 @@ namespace Babel.Api.Modules.Trades.Application
             if (quantity <= 0)
                 throw new ArgumentException("Quantity must be positive.");
 
-            var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
-              ?? throw new ArgumentException("Portfolio not found.");
-
-            var asset = await _assetRepo.GetBySymbolAsync(symbol)
-                ?? throw new ArgumentException("Asset not found.");
-
-            var holding = await _portfolioRepo.GetHoldingAsync(portfolio.Id, asset.Id)
-                ?? throw new ArgumentException("Holding not found.");
-
-            if (holding.Quantity < quantity)
-                throw new InvalidOperationException("You do not have enough shares to sell");
-
-            var quote = await _marketData.GetQuoteAsync(symbol)
-                ?? throw new InvalidOperationException("Price unavailable");
-
-            var price = quote.Price;
-            var proceeds = quantity * price;
-
-            holding.Quantity -= quantity;
-            if(holding.Quantity == 0)
+            await using var tx = await _db.Database.BeginTransactionAsync();
+            try
             {
-                _portfolioRepo.RemoveHolding(holding);
+                var portfolio = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
+                    ?? throw new ArgumentException("Portfolio not found.");
+
+                var asset = await _assetRepo.GetBySymbolAsync(symbol)
+                    ?? throw new ArgumentException("Asset not found.");
+
+                var holding = await _portfolioRepo.GetHoldingAsync(portfolio.Id, asset.Id)
+                    ?? throw new ArgumentException("Holding not found.");
+
+                if (holding.Quantity < quantity)
+                    throw new InvalidOperationException("You do not have enough shares to sell");
+
+                var quote = await _marketData.GetQuoteAsync(symbol)
+                    ?? throw new InvalidOperationException("Price unavailable");
+
+                var price = quote.Price;
+                var proceeds = quantity * price;
+
+                holding.Quantity -= quantity;
+                if (holding.Quantity == 0)
+                {
+                    _portfolioRepo.RemoveHolding(holding);
+                }
+
+                portfolio.CashBalance += proceeds;
+
+                var trade = new Trade
+                {
+                    PortfolioId = portfolioId,
+                    AssetId = asset.Id,
+                    Side = TradeSide.Sell,
+                    Quantity = quantity,
+                    Price = price,
+                    TotalAmount = proceeds,
+                    ExecutedAtUtc = DateTime.UtcNow,
+                    QuoteAsOfUtc = quote.RetrievedAtUtc
+                };
+                await _tradeRepo.AddAsync(trade);
+                await _portfolioRepo.SaveChangesAsync();
+                await tx.CommitAsync();
+                return trade;
             }
-
-            portfolio.CashBalance += proceeds;
-
-            var trade = new Trade
+            catch
             {
-                PortfolioId = portfolioId,
-                AssetId = asset.Id,
-                Side = TradeSide.Sell,
-                Quantity = quantity,
-                Price = price,
-                TotalAmount = proceeds,
-                ExecutedAtUtc = DateTime.UtcNow,
-                QuoteAsOfUtc = quote.RetrievedAtUtc
-            };
-            await _tradeRepo.AddAsync(trade);
-            await _portfolioRepo.SaveChangesAsync();
-            return trade;
+                await tx.RollbackAsync();
+                throw;
+            }
         }
 
-        public Task<List<Trade>> GetPortfolioTradesAsync(int portfolioId)
+        public async Task<List<Trade>> GetTradesForUserPortfolioAsync(int userId, int portfolioId)
         {
-            return _tradeRepo.GetByPortfolioIdAsync(portfolioId);
+            _ = await _portfolioRepo.GetByIdForUserAsync(portfolioId, userId)
+                ?? throw new ArgumentException("Portfolio not found.");
+
+            return await _tradeRepo.GetByPortfolioIdAsync(portfolioId);
         }
 
         public async Task<decimal> GetPortfolioValueAsync(int userId, int portfolioId)
@@ -144,6 +176,10 @@ namespace Babel.Api.Modules.Trades.Application
             foreach(var holding in portfolio.Holdings)
             {
                 var asset = await _assetRepo.GetByIdAsync(holding.AssetId);
+                if (asset is null)
+                {
+                    continue;
+                }
 
                 var quote = await _marketData.GetQuoteAsync(asset.Symbol);
 
