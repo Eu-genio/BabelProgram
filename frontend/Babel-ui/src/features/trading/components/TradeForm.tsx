@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { ApiError } from "../../../lib/api/client";
-import { submitTrade, type TradeSide } from "../../../lib/api/tradesApi";
+import { submitTrade, type TradeExecutionResult, type TradeSide } from "../../../lib/api/tradesApi";
+import { formatCurrency, formatDateTimeUtc } from "../utils/format";
 
 type TradeFormProps = {
   portfolioId: number;
@@ -13,6 +14,7 @@ export default function TradeForm({ portfolioId, onTradeSuccess }: TradeFormProp
   const [side, setSide] = useState<TradeSide>("buy");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [lastExecution, setLastExecution] = useState<TradeExecutionResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -34,16 +36,18 @@ export default function TradeForm({ portfolioId, onTradeSuccess }: TradeFormProp
     try {
       setError(null);
       setSuccess(null);
+      setLastExecution(null);
       setIsSubmitting(true);
 
-      await submitTrade(side, {
+      const result = await submitTrade(side, {
         portfolioId,
         symbol: normalizedSymbol,
         quantity: normalizedQuantity,
       });
 
+      setLastExecution(result);
       await onTradeSuccess();
-      setSuccess(`${side === "buy" ? "Buy" : "Sell"} order placed for ${normalizedSymbol}.`);
+      setSuccess(`${side === "buy" ? "Buy" : "Sell"} filled for ${normalizedSymbol}.`);
       setQuantity("");
     } catch (err) {
       if (err instanceof ApiError) {
@@ -60,7 +64,8 @@ export default function TradeForm({ portfolioId, onTradeSuccess }: TradeFormProp
     <section className="trade-form-section">
       <h2>Place Trade</h2>
       <p className="trade-form-hint">
-        Buy adds units to your holdings. Sell removes units from what you currently own.
+        Buy adds units to your holdings. Sell removes units from what you currently own. Execution uses the same
+        Finnhub quote feed as Market (paper fills).
       </p>
 
       <form onSubmit={handleSubmit} className="trade-form" noValidate>
@@ -70,6 +75,22 @@ export default function TradeForm({ portfolioId, onTradeSuccess }: TradeFormProp
           </p>
         )}
         {success && <p className="trade-form-success">{success}</p>}
+        {lastExecution && (
+          <div className="trade-form-execution-detail" role="status">
+            <p>
+              <strong>Execution price:</strong> {formatCurrency(lastExecution.price)} per share ·{" "}
+              <strong>Total:</strong> {formatCurrency(lastExecution.totalAmount)}
+            </p>
+            <p>
+              <strong>Filled at:</strong> {formatDateTimeUtc(lastExecution.executedAtUtc)}
+            </p>
+            {lastExecution.quoteAsOfUtc && (
+              <p>
+                <strong>Quote timestamp (Finnhub):</strong> {formatDateTimeUtc(lastExecution.quoteAsOfUtc)}
+              </p>
+            )}
+          </div>
+        )}
 
         <label htmlFor="trade-symbol">Symbol</label>
         <input

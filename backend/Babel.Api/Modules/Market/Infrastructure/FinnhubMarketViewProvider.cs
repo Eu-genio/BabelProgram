@@ -122,12 +122,22 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
         var change = root.TryGetProperty("d", out var d) ? d.GetDecimal() : 0m;
         var changePercent = root.TryGetProperty("dp", out var dp) ? dp.GetDecimal() : 0m;
 
+        var asOfUtc = DateTime.UtcNow;
+        if (root.TryGetProperty("t", out var tEl) && tEl.ValueKind == JsonValueKind.Number)
+        {
+            var unix = tEl.GetInt64();
+            if (unix > 0)
+            {
+                asOfUtc = DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
+            }
+        }
+
         return new MarketQuote(
             Symbol: symbol,
             Price: current,
             Change: change,
             ChangePercent: changePercent,
-            AsOfUtc: DateTime.UtcNow
+            AsOfUtc: asOfUtc
         );
     }
 

@@ -76,6 +76,20 @@ td {
   margin: 0;
 }
 
+.trade-form-execution-detail {
+  margin: 0 0 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  max-width: 28rem;
+}
+
+.trade-form-execution-detail p {
+  margin: 0.25rem 0;
+}
+
 .trade-form-hint,
 .trade-form-subhint {
   margin: 0;

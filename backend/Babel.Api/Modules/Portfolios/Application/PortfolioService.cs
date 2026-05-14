@@ -93,11 +93,13 @@ namespace Babel.Api.Modules.Portfolios.Application
 
                 tradeDtos.Add(new TradeDto
                 {
+                    Id = t.Id,
                     Symbol = asset.Symbol,
                     Side = t.Side.ToString(),
                     Quantity = t.Quantity,
                     Price = t.Price,
-                    ExecutedAtUtc = t.ExecutedAtUtc
+                    ExecutedAtUtc = t.ExecutedAtUtc,
+                    QuoteAsOfUtc = t.QuoteAsOfUtc
                 });
             }
 

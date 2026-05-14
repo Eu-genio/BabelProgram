@@ -11,5 +11,8 @@
         public decimal Price { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime ExecutedAtUtc { get; set; } = DateTime.UtcNow;
+
+        /// <summary>Finnhub quote timestamp (Unix field <c>t</c>) when available; otherwise aligned with retrieval.</summary>
+        public DateTime? QuoteAsOfUtc { get; set; }
     }
 }

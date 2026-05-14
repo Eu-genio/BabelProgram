@@ -1,5 +1,5 @@
 import type { DashboardTrade } from "../../../lib/api/portfolioApi";
-import { formatCurrency, formatQuantity } from "../utils/format";
+import { formatCurrency, formatDateTimeUtc, formatQuantity } from "../utils/format";
 
 type Props = {
   data: DashboardTrade[];
@@ -16,22 +16,26 @@ export default function RecentTrades({ data }: Props) {
             <th>Asset</th>
             <th>Side</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Execution price</th>
+            <th>Filled (UTC)</th>
+            <th>Quote as of (UTC)</th>
           </tr>
         </thead>
 
         <tbody>
           {data.length === 0 && (
             <tr>
-              <td colSpan={4}>No trades yet. Submit your first buy order above.</td>
+              <td colSpan={6}>No trades yet. Submit your first buy order above.</td>
             </tr>
           )}
           {data.map((t) => (
-            <tr key={`${t.symbol}-${t.side}-${t.price}-${t.quantity}`}>
+            <tr key={t.id}>
               <td>{t.symbol}</td>
               <td>{t.side}</td>
               <td>{formatQuantity(t.quantity)}</td>
               <td>{formatCurrency(t.price)}</td>
+              <td>{formatDateTimeUtc(t.executedAtUtc)}</td>
+              <td>{t.quoteAsOfUtc ? formatDateTimeUtc(t.quoteAsOfUtc) : "—"}</td>
             </tr>
           ))}
         </tbody>

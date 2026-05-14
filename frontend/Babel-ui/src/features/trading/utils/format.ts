@@ -14,3 +14,17 @@ export function formatQuantity(value: number): string {
     maximumFractionDigits: 6,
   }).format(value);
 }
+
+const dateTimeUtcFormatter = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "medium",
+  timeZone: "UTC",
+});
+
+export function formatDateTimeUtc(isoOrMs: string | number | Date): string {
+  const d = typeof isoOrMs === "string" || typeof isoOrMs === "number" ? new Date(isoOrMs) : isoOrMs;
+  if (Number.isNaN(d.getTime())) {
+    return "—";
+  }
+  return `${dateTimeUtcFormatter.format(d)} UTC`;
+}

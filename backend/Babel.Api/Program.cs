@@ -70,7 +70,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddScoped<AssetRepository>();
 builder.Services.AddScoped<AssetService>();
-builder.Services.AddScoped<IMarketDataProvider, MockMarketDataProvider>();
+builder.Services.AddScoped<IMarketDataProvider, MarketViewMarketDataProvider>();
 builder.Services.AddScoped<MarketDataService>();
 builder.Services.AddHttpClient<IMarketViewProvider, FinnhubMarketViewProvider>();
 builder.Services.AddScoped<MarketViewService>();

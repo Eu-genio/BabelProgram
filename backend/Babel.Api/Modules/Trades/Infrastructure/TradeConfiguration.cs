@@ -33,6 +33,8 @@ public class TradeConfiguration : IEntityTypeConfiguration<Trade>
         builder.Property(x => x.ExecutedAtUtc)
             .IsRequired();
 
+        builder.Property(x => x.QuoteAsOfUtc);
+
         // Indexes 
         builder.HasIndex(x => x.PortfolioId);
         builder.HasIndex(x => x.AssetId);

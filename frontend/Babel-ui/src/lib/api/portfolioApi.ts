@@ -24,6 +24,8 @@ export type DashboardTrade = {
   side: string;
   quantity: number;
   price: number;
+  executedAtUtc: string;
+  quoteAsOfUtc?: string | null;
 };
 
 export type PortfolioDashboardResponse = {

@@ -74,7 +74,9 @@ namespace Babel.Api.Modules.Trades.Application
                 Side = TradeSide.Buy,
                 Quantity = quantity,
                 Price = price,
-                TotalAmount = cost
+                TotalAmount = cost,
+                ExecutedAtUtc = DateTime.UtcNow,
+                QuoteAsOfUtc = quote.RetrievedAtUtc
             };
             await _tradeRepo.AddAsync(trade);
             await _portfolioRepo.SaveChangesAsync();
@@ -119,7 +121,9 @@ namespace Babel.Api.Modules.Trades.Application
                 Side = TradeSide.Sell,
                 Quantity = quantity,
                 Price = price,
-                TotalAmount = proceeds
+                TotalAmount = proceeds,
+                ExecutedAtUtc = DateTime.UtcNow,
+                QuoteAsOfUtc = quote.RetrievedAtUtc
             };
             await _tradeRepo.AddAsync(trade);
             await _portfolioRepo.SaveChangesAsync();
