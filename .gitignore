@@ -9,3 +9,4 @@
 
 # Environment files
 frontend/babel-ui/.env*
+backend/Babel.Api/appsettings.Development.local.json

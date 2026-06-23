@@ -7,7 +7,9 @@ import {
   type MarketNewsItem,
   type MarketQuote,
 } from "../../../lib/api/marketApi";
+import StockDetailPanel from "../components/StockDetailPanel";
 import "../../trading/trading.css";
+import "../market.css";
 
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 
@@ -19,6 +21,7 @@ function quoteColorClass(value: number): string {
 
 export default function MarketPage() {
   const [symbolsInput, setSymbolsInput] = useState("AAPL,MSFT,TSLA");
+  const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
   const [watchlist, setWatchlist] = useState<MarketQuote[]>([]);
   const [movers, setMovers] = useState<MarketQuote[]>([]);
   const [news, setNews] = useState<MarketNewsItem[]>([]);
@@ -47,6 +50,10 @@ export default function MarketPage() {
       setWatchlist(watchlistData);
       setMovers(moversData);
       setNews(newsData);
+
+      if (watchlistData.length > 0 && !watchlistData.some((q) => q.symbol === selectedSymbol)) {
+        setSelectedSymbol(watchlistData[0].symbol);
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
@@ -62,16 +69,22 @@ export default function MarketPage() {
     void loadData(symbols);
   }, []);
 
+  function selectSymbol(symbol: string) {
+    setSelectedSymbol(symbol.toUpperCase());
+  }
+
   return (
     <div className="trading-container">
       <h1 className="trading-title">Market</h1>
       <p className="trading-subtitle">
-        Delayed market data for learning purposes. Not investment advice.
+        Delayed market data for learning purposes. Live quotes from Finnhub; charts from Yahoo Finance.
       </p>
 
       <section className="trade-form-section">
         <h2>Watchlist Setup</h2>
-        <p className="trade-form-hint">Enter comma-separated symbols, for example: AAPL,MSFT,NVDA</p>
+        <p className="trade-form-hint">
+          Enter comma-separated symbols, then pick one below to view its chart.
+        </p>
         <div className="trade-form">
           <input value={symbolsInput} onChange={(e) => setSymbolsInput(e.target.value)} />
           <button type="button" onClick={() => void loadData(symbols)} disabled={loading}>
@@ -85,6 +98,8 @@ export default function MarketPage() {
         )}
       </section>
 
+      <StockDetailPanel symbol={selectedSymbol} />
+
       <div className="table-section">
         <h2>Watchlist</h2>
         <table>
@@ -92,19 +107,32 @@ export default function MarketPage() {
             <tr>
               <th>Symbol</th>
               <th>Price</th>
+              <th>Open</th>
               <th>Change</th>
             </tr>
           </thead>
           <tbody>
             {watchlist.length === 0 && (
               <tr>
-                <td colSpan={3}>No watchlist data available.</td>
+                <td colSpan={4}>No watchlist data available.</td>
               </tr>
             )}
             {watchlist.map((q) => (
-              <tr key={q.symbol}>
-                <td>{q.symbol}</td>
+              <tr
+                key={q.symbol}
+                className={q.symbol === selectedSymbol ? "market-row-selected" : undefined}
+              >
+                <td>
+                  <button
+                    type="button"
+                    className="market-symbol-button"
+                    onClick={() => selectSymbol(q.symbol)}
+                  >
+                    {q.symbol}
+                  </button>
+                </td>
                 <td>{currency.format(q.price)}</td>
+                <td>{currency.format(q.open)}</td>
                 <td className={quoteColorClass(q.changePercent)}>
                   {q.changePercent.toFixed(2)}%
                 </td>
@@ -121,19 +149,32 @@ export default function MarketPage() {
             <tr>
               <th>Symbol</th>
               <th>Price</th>
+              <th>Open</th>
               <th>Change</th>
             </tr>
           </thead>
           <tbody>
             {movers.length === 0 && (
               <tr>
-                <td colSpan={3}>No mover data available.</td>
+                <td colSpan={4}>No mover data available.</td>
               </tr>
             )}
             {movers.map((q) => (
-              <tr key={`${q.symbol}-${q.asOfUtc}`}>
-                <td>{q.symbol}</td>
+              <tr
+                key={`${q.symbol}-${q.asOfUtc}`}
+                className={q.symbol === selectedSymbol ? "market-row-selected" : undefined}
+              >
+                <td>
+                  <button
+                    type="button"
+                    className="market-symbol-button"
+                    onClick={() => selectSymbol(q.symbol)}
+                  >
+                    {q.symbol}
+                  </button>
+                </td>
                 <td>{currency.format(q.price)}</td>
+                <td>{currency.format(q.open)}</td>
                 <td className={quoteColorClass(q.changePercent)}>
                   {q.changePercent.toFixed(2)}%
                 </td>

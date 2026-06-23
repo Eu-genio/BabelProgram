@@ -40,6 +40,18 @@ public class MarketController : ControllerBase
         return Ok(data);
     }
 
+    [HttpGet("{symbol}/chart")]
+    public async Task<ActionResult<MarketChart>> GetChart(string symbol, [FromQuery] string range = "1D", CancellationToken cancellationToken = default)
+    {
+        var chart = await _service.GetChartAsync(symbol, range, cancellationToken);
+        if (chart is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(chart);
+    }
+
     private static IReadOnlyList<string> ParseSymbols(string? raw, IReadOnlyList<string> fallback)
     {
         if (string.IsNullOrWhiteSpace(raw))

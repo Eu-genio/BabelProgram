@@ -121,6 +121,10 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
 
         var change = root.TryGetProperty("d", out var d) ? d.GetDecimal() : 0m;
         var changePercent = root.TryGetProperty("dp", out var dp) ? dp.GetDecimal() : 0m;
+        var open = root.TryGetProperty("o", out var o) ? o.GetDecimal() : 0m;
+        var high = root.TryGetProperty("h", out var h) ? h.GetDecimal() : 0m;
+        var low = root.TryGetProperty("l", out var l) ? l.GetDecimal() : 0m;
+        var previousClose = root.TryGetProperty("pc", out var pc) ? pc.GetDecimal() : 0m;
 
         var asOfUtc = DateTime.UtcNow;
         if (root.TryGetProperty("t", out var tEl) && tEl.ValueKind == JsonValueKind.Number)
@@ -137,7 +141,11 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
             Price: current,
             Change: change,
             ChangePercent: changePercent,
-            AsOfUtc: asOfUtc
+            AsOfUtc: asOfUtc,
+            Open: open,
+            High: high,
+            Low: low,
+            PreviousClose: previousClose
         );
     }
 
@@ -166,9 +174,16 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
         {
             var statusCode = (int)response.StatusCode;
 
-            if (statusCode == 401 || statusCode == 403)
+            if (statusCode == 401)
             {
-                throw new InvalidOperationException("Market data provider rejected the API key.");
+                throw new InvalidOperationException(
+                    "Finnhub rejected the API key. Set Finnhub:ApiKey via user secrets or the Finnhub__ApiKey environment variable, then restart the API.");
+            }
+
+            if (statusCode == 403)
+            {
+                throw new InvalidOperationException(
+                    "Finnhub denied access (403). Your API key may be invalid, expired, or not allowed for this endpoint on your plan.");
             }
 
             if (statusCode == 429)

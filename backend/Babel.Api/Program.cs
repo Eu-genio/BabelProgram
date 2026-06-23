@@ -21,6 +21,11 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.Development.local.json", optional: true, reloadOnChange: true);
+}
+
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT Key not configured");
 
@@ -73,6 +78,7 @@ builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<IMarketDataProvider, MarketViewMarketDataProvider>();
 builder.Services.AddScoped<MarketDataService>();
 builder.Services.AddHttpClient<IMarketViewProvider, FinnhubMarketViewProvider>();
+builder.Services.AddHttpClient<IMarketChartProvider, YahooChartProvider>();
 builder.Services.AddScoped<MarketViewService>();
 builder.Services.AddScoped<PortfolioRepository>();
 builder.Services.AddScoped<PortfolioService>();
