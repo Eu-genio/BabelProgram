@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { ApiError } from "../../../lib/api/client";
 import {
+  getDefaultWatchlistInput,
+  getMarketWatchlistSymbols,
+  parseWatchlistInput,
+  saveMarketWatchlistSymbols,
+} from "../../../lib/marketWatchlist";
+import {
   getMarketNews,
   getTopMovers,
   getWatchlist,
@@ -20,7 +26,7 @@ function quoteColorClass(value: number): string {
 }
 
 export default function MarketPage() {
-  const [symbolsInput, setSymbolsInput] = useState("AAPL,MSFT,TSLA");
+  const [symbolsInput, setSymbolsInput] = useState(getDefaultWatchlistInput);
   const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
   const [watchlist, setWatchlist] = useState<MarketQuote[]>([]);
   const [movers, setMovers] = useState<MarketQuote[]>([]);
@@ -40,6 +46,7 @@ export default function MarketPage() {
   async function loadData(activeSymbols: string[]) {
     setLoading(true);
     setError(null);
+    saveMarketWatchlistSymbols(activeSymbols);
     try {
       const [watchlistData, moversData, newsData] = await Promise.all([
         getWatchlist(activeSymbols),
@@ -66,7 +73,7 @@ export default function MarketPage() {
   }
 
   useEffect(() => {
-    void loadData(symbols);
+    void loadData(getMarketWatchlistSymbols());
   }, []);
 
   function selectSymbol(symbol: string) {

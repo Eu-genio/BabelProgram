@@ -21,6 +21,7 @@ namespace Babel.Api.Shared.Persistence
         // Later you can override OnModelCreating for custom config.
         public DbSet<Portfolio> Portfolios => Set<Portfolio>();
         public DbSet<PortfolioHolding> PortfolioHoldings => Set<PortfolioHolding>();
+        public DbSet<PortfolioFollowedSymbol> PortfolioFollowedSymbols => Set<PortfolioFollowedSymbol>();
         public DbSet<Trade> Trades => Set<Trade>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,7 @@ namespace Babel.Api.Shared.Persistence
             modelBuilder.ApplyConfiguration(new AssetConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioHoldingConfiguration());
+            modelBuilder.ApplyConfiguration(new PortfolioFollowedSymbolConfiguration());
             modelBuilder.ApplyConfiguration(new TradeConfiguration());
 
         }

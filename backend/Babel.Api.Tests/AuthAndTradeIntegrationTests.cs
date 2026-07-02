@@ -110,7 +110,7 @@ public class AuthAndTradeIntegrationTests : IClassFixture<WebApplicationFactory<
         var token1 = await GetTokenFromLogin(clientA, email1, password);
         clientA.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token1);
 
-        var portfolioResponse = await clientA.PostAsJsonAsync("/api/portfolios", new { name = "A portfolio" });
+        var portfolioResponse = await clientA.PostAsJsonAsync("/api/portfolios", new { name = "A portfolio", symbols = new[] { "AAPL" } });
         Assert.Equal(HttpStatusCode.OK, portfolioResponse.StatusCode);
         var portfolioPayload = await portfolioResponse.Content.ReadFromJsonAsync<JsonElement>();
         var portfolioId = portfolioPayload.GetProperty("id").GetInt32();

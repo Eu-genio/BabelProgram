@@ -6,16 +6,31 @@ export type PortfolioResponse = {
   cashBalance: number;
 };
 
-type CreatePortfolioRequest = {
-  name: string;
+export type SummaryRow = {
+  symbol: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number | null;
+  averageVolume: number | null;
+  previousClose: number;
+  open: number;
 };
 
-export type DashboardHolding = {
+export type HoldingsRow = {
   symbol: string;
-  quantity: number;
-  averageCost: number;
-  currentPrice: number;
-  marketValue: number;
+  price: number;
+  change: number;
+  changePercent: number;
+  weight: number;
+  shares: number;
+  cost: number;
+  todaysGain: number;
+  todaysGainPercent: number;
+  estAnnualIncome: number | null;
+  totalChange: number;
+  totalChangePercent: number;
+  value: number;
 };
 
 export type DashboardTrade = {
@@ -28,12 +43,30 @@ export type DashboardTrade = {
   quoteAsOfUtc?: string | null;
 };
 
+export type PortfolioNewsItem = {
+  symbol: string;
+  headline: string;
+  source: string;
+  url: string;
+  publishedAtUtc: string;
+};
+
 export type PortfolioDashboardResponse = {
+  portfolioId: number;
+  name: string;
   cash: number;
   holdingsValue: number;
   totalValue: number;
-  holdings: DashboardHolding[];
-  recentTrades: DashboardTrade[];
+  hasFollowedSymbols: boolean;
+  summary: SummaryRow[];
+  holdings: HoldingsRow[];
+  trades: DashboardTrade[];
+  news: PortfolioNewsItem[];
+};
+
+type CreatePortfolioRequest = {
+  name: string;
+  symbols: string[];
 };
 
 export function getMyPortfolios() {
@@ -48,5 +81,25 @@ export function createPortfolio(payload: CreatePortfolioRequest) {
   return apiFetch<PortfolioResponse>("/portfolios", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export function addPortfolioSymbols(portfolioId: number, symbols: string[]) {
+  return apiFetch<void>(`/portfolios/${portfolioId}/symbols`, {
+    method: "POST",
+    body: JSON.stringify({ symbols }),
+  });
+}
+
+export function deletePortfolio(portfolioId: number) {
+  return apiFetch<void>(`/portfolios/${portfolioId}`, {
+    method: "DELETE",
+  });
+}
+
+export function depositCash(portfolioId: number, amount: number) {
+  return apiFetch<PortfolioResponse>(`/portfolios/${portfolioId}/deposit`, {
+    method: "POST",
+    body: JSON.stringify({ amount }),
   });
 }

@@ -1,6 +1,5 @@
 using Babel.Api.Modules.Market.Application;
-using Babel.Api.Modules.Market.Domain;
-using Microsoft.AspNetCore.Authorization;
+using Babel.Api.Modules.Market.Domain;using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Babel.Api.Modules.Market.Api;
@@ -15,6 +14,22 @@ public class MarketController : ControllerBase
     public MarketController(MarketViewService service)
     {
         _service = service;
+    }
+
+    [HttpGet("symbols/search")]
+    public async Task<ActionResult<IReadOnlyList<SymbolSearchResult>>> SearchSymbols(
+        [FromQuery] string query,
+        [FromQuery] int limit = 3,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return Ok(Array.Empty<SymbolSearchResult>());
+        }
+
+        var cappedLimit = Math.Clamp(limit, 1, 10);
+        var results = await _service.SearchSymbolsAsync(query, cappedLimit, cancellationToken);
+        return Ok(results);
     }
 
     [HttpGet("watchlist")]

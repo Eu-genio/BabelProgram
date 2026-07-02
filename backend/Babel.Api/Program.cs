@@ -79,6 +79,7 @@ builder.Services.AddScoped<IMarketDataProvider, MarketViewMarketDataProvider>();
 builder.Services.AddScoped<MarketDataService>();
 builder.Services.AddHttpClient<IMarketViewProvider, FinnhubMarketViewProvider>();
 builder.Services.AddHttpClient<IMarketChartProvider, YahooChartProvider>();
+builder.Services.AddHttpClient<IStockSnapshotProvider, YahooStockSnapshotProvider>();
 builder.Services.AddScoped<MarketViewService>();
 builder.Services.AddScoped<PortfolioRepository>();
 builder.Services.AddScoped<PortfolioService>();

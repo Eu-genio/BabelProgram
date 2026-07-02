@@ -28,3 +28,38 @@ export function formatDateTimeUtc(isoOrMs: string | number | Date): string {
   }
   return `${dateTimeUtcFormatter.format(d)} UTC`;
 }
+
+export function formatVolume(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    notation: value >= 1_000_000 ? "compact" : "standard",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+export function formatSignedCurrency(value: number): string {
+  const formatted = currencyFormatter.format(Math.abs(value));
+  if (value > 0) return `+${formatted}`;
+  if (value < 0) return `-${formatted}`;
+  return formatted;
+}
+
+export function formatSignedPercent(value: number): string {
+  const formatted = `${Math.abs(value).toFixed(2)}%`;
+  if (value > 0) return `+${formatted}`;
+  if (value < 0) return `-${formatted}`;
+  return formatted;
+}
+
+function quoteColorClass(value: number): string {
+  if (value > 0) return "market-up";
+  if (value < 0) return "market-down";
+  return "";
+}
+
+export function colorClassForValue(value: number): string {
+  return quoteColorClass(value);
+}

@@ -56,6 +56,19 @@ export function getTopMovers() {
   return apiFetch<MarketQuote[]>("/market/movers");
 }
 
+export type SymbolSearchResult = {
+  symbol: string;
+  name: string;
+};
+
+export function searchSymbols(query: string, limit = 3) {
+  const params = new URLSearchParams({
+    query: query.trim(),
+    limit: String(limit),
+  });
+  return apiFetch<SymbolSearchResult[]>(`/market/symbols/search?${params}`);
+}
+
 export function getMarketNews(symbols: string[]) {
   const query = buildSymbolsQuery(symbols);
   return apiFetch<MarketNewsItem[]>(`/market/news?symbols=${encodeURIComponent(query)}`);

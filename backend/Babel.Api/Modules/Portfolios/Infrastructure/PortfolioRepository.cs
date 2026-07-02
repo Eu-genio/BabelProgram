@@ -67,5 +67,38 @@ namespace Babel.Api.Modules.Portfolios.Infrastructure
             return await _db.Portfolios.Include(x => x.Holdings).FirstOrDefaultAsync(p => p.Id == portfolioId && p.UserId == userId);
         }
 
+        public async Task<List<PortfolioFollowedSymbol>> GetFollowedSymbolsAsync(int portfolioId)
+        {
+            return await _db.PortfolioFollowedSymbols
+                .Where(x => x.PortfolioId == portfolioId)
+                .OrderBy(x => x.FollowedAtUtc)
+                .ToListAsync();
+        }
+
+        public async Task AddFollowedSymbolAsync(PortfolioFollowedSymbol item)
+        {
+            await _db.PortfolioFollowedSymbols.AddAsync(item);
+        }
+
+        public async Task<PortfolioFollowedSymbol?> GetFollowedSymbolAsync(int portfolioId, int assetId)
+        {
+            return await _db.PortfolioFollowedSymbols
+                .FirstOrDefaultAsync(x => x.PortfolioId == portfolioId && x.AssetId == assetId);
+        }
+
+        public void RemoveFollowedSymbol(PortfolioFollowedSymbol item)
+        {
+            _db.PortfolioFollowedSymbols.Remove(item);
+        }
+
+        public async Task DeleteAsync(Portfolio portfolio)
+        {
+            var follows = await _db.PortfolioFollowedSymbols.Where(x => x.PortfolioId == portfolio.Id).ToListAsync();
+            var holdings = await _db.PortfolioHoldings.Where(x => x.PortfolioId == portfolio.Id).ToListAsync();
+            _db.PortfolioFollowedSymbols.RemoveRange(follows);
+            _db.PortfolioHoldings.RemoveRange(holdings);
+            _db.Portfolios.Remove(portfolio);
+            await _db.SaveChangesAsync();
+        }
     }
 }

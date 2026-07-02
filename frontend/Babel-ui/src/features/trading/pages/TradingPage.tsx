@@ -1,36 +1,63 @@
 import { useEffect, useState } from "react";
-import PortfolioSummary from "../components/PortfolioSummary";
-import HoldingsTable from "../components/HoldingsTable";
-import RecentTrades from "../components/RecentTrades";
-import TradeForm from "../components/TradeForm";
 import { ApiError } from "../../../lib/api/client";
 import {
+  addPortfolioSymbols,
+  createPortfolio,
+  deletePortfolio,
+  depositCash,
   getDashboard,
   getMyPortfolios,
-  createPortfolio,
-  type PortfolioResponse,
   type PortfolioDashboardResponse,
+  type PortfolioResponse,
 } from "../../../lib/api/portfolioApi";
+import AddCashModal from "../components/AddCashModal";
+import CreatePortfolioModal from "../components/CreatePortfolioModal";
+import EmptyPortfolioState from "../components/EmptyPortfolioState";
+import InlineTradeModal from "../components/InlineTradeModal";
+import PortfolioSidebar from "../components/PortfolioSidebar";
+import PortfolioSummary from "../components/PortfolioSummary";
+import HistoryTab from "../components/tabs/HistoryTab";
+import HoldingsTab from "../components/tabs/HoldingsTab";
+import SummaryTab from "../components/tabs/SummaryTab";
 import "../trading.css";
+
+type TabId = "summary" | "history" | "holdings";
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: "summary", label: "Summary" },
+  { id: "holdings", label: "Holdings" },
+  { id: "history", label: "History" },
+];
 
 export default function TradingPage() {
   const [portfolios, setPortfolios] = useState<PortfolioResponse[]>([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>(null);
   const [data, setData] = useState<PortfolioDashboardResponse | null>(null);
-
+  const [activeTab, setActiveTab] = useState<TabId>("summary");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newPortfolioName, setNewPortfolioName] = useState("");
-  const [isCreatingPortfolio, setIsCreatingPortfolio] = useState(false);
-  const [createPortfolioError, setCreatePortfolioError] = useState<string | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [addSymbolsModalOpen, setAddSymbolsModalOpen] = useState(false);
+  const [addCashModalOpen, setAddCashModalOpen] = useState(false);
+  const [tradeSymbol, setTradeSymbol] = useState<string | null>(null);
 
-  async function loadPortfolios() {
-    const fetchedPortfolios = await getMyPortfolios();
-    setPortfolios(fetchedPortfolios);
+  async function loadPortfolios(preferredId?: number | null) {
+    const fetched = await getMyPortfolios();
+    setPortfolios(fetched);
 
-    if (fetchedPortfolios.length > 0) {
-      setSelectedPortfolioId((current) => current ?? fetchedPortfolios[0].id);
+    if (fetched.length === 0) {
+      setSelectedPortfolioId(null);
+      return;
     }
+
+    const nextId =
+      preferredId && fetched.some((p) => p.id === preferredId)
+        ? preferredId
+        : selectedPortfolioId && fetched.some((p) => p.id === selectedPortfolioId)
+          ? selectedPortfolioId
+          : fetched[0].id;
+
+    setSelectedPortfolioId(nextId);
   }
 
   async function refreshDashboard(portfolioId: number) {
@@ -43,49 +70,22 @@ export default function TradingPage() {
       try {
         setLoading(true);
         setError(null);
-
         await loadPortfolios();
       } catch (err) {
-        if (err instanceof ApiError) {
-          setError(err.message);
-        } else {
-          setError("Failed to load portfolios");
-        }
+        setError(err instanceof ApiError ? err.message : "Failed to load portfolios.");
       } finally {
         setLoading(false);
       }
     }
 
-    initialLoad();
+    void initialLoad();
   }, []);
 
-  async function handleCreatePortfolio() {
-    const trimmedName = newPortfolioName.trim();
-    if (!trimmedName) {
-      setCreatePortfolioError("Portfolio name is required.");
+  useEffect(() => {
+    if (selectedPortfolioId === null) {
+      setData(null);
       return;
     }
-
-    try {
-      setCreatePortfolioError(null);
-      setIsCreatingPortfolio(true);
-      const createdPortfolio = await createPortfolio({ name: trimmedName });
-      setNewPortfolioName("");
-      await loadPortfolios();
-      setSelectedPortfolioId(createdPortfolio.id);
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setCreatePortfolioError(err.message);
-      } else {
-        setCreatePortfolioError("Failed to create portfolio.");
-      }
-    } finally {
-      setIsCreatingPortfolio(false);
-    }
-  }
-
-  useEffect(() => {
-    if (selectedPortfolioId === null) return;
 
     const portfolioId = selectedPortfolioId;
 
@@ -93,90 +93,163 @@ export default function TradingPage() {
       try {
         setLoading(true);
         setError(null);
-
         await refreshDashboard(portfolioId);
       } catch (err) {
-        if (err instanceof ApiError) {
-          setError(err.message);
-        } else {
-          setError("Failed to load dashboard");
-        }
+        setError(err instanceof ApiError ? err.message : "Failed to load dashboard.");
       } finally {
         setLoading(false);
       }
     }
 
-    loadDashboard();
+    void loadDashboard();
   }, [selectedPortfolioId]);
 
-  if (loading && !data) {
+  async function handleCreatePortfolio(name: string, symbols: string[]) {
+    const created = await createPortfolio({ name, symbols });
+    await loadPortfolios(created.id);
+  }
+
+  async function handleAddSymbols(_name: string, symbols: string[]) {
+    if (selectedPortfolioId === null) return;
+    await addPortfolioSymbols(selectedPortfolioId, symbols);
+    await refreshDashboard(selectedPortfolioId);
+  }
+
+  async function handleAddCash(amount: number) {
+    if (selectedPortfolioId === null) return;
+    await depositCash(selectedPortfolioId, amount);
+    await refreshDashboard(selectedPortfolioId);
+  }
+
+  async function handleDeletePortfolio() {
+    if (selectedPortfolioId === null) return;
+    if (!window.confirm("Delete this portfolio? This cannot be undone.")) return;
+
+    const deletedId = selectedPortfolioId;
+    await deletePortfolio(deletedId);
+    await loadPortfolios();
+    setData(null);
+  }
+
+  if (loading && portfolios.length === 0) {
     return <p>Loading your trading dashboard...</p>;
   }
 
-  if (error) {
-    return <p role="alert">{error}</p>;
-  }
-
-  if (portfolios.length === 0) {
-    return (
-      <div>
-        <h1>Trading Dashboard</h1>
-        <p>You don’t have any portfolios yet. Create one to start paper trading.</p>
-        <div className="empty-portfolio-actions">
-          {createPortfolioError && (
-            <p className="trade-form-error" role="alert">
-              {createPortfolioError}
-            </p>
-          )}
-          <input
-            type="text"
-            placeholder="My first portfolio"
-            value={newPortfolioName}
-            onChange={(event) => setNewPortfolioName(event.target.value)}
-          />
-          <button type="button" onClick={handleCreatePortfolio} disabled={isCreatingPortfolio}>
-            {isCreatingPortfolio ? "Creating..." : "Create portfolio"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const currentPortfolioId = selectedPortfolioId;
-  if (currentPortfolioId === null) {
-    return <p>Select a portfolio to continue.</p>;
-  }
-
   return (
-    <div className="trading-container">
-      <h1 className="trading-title">Trading Dashboard</h1>
-      <p className="trading-subtitle">
-        Paper trading only. Practice trades here without risking real money.
-      </p>
+    <div className="trading-layout">
+      <PortfolioSidebar
+        portfolios={portfolios}
+        selectedId={selectedPortfolioId}
+        onSelect={setSelectedPortfolioId}
+        onAdd={() => setCreateModalOpen(true)}
+      />
 
-      {/* 🔹 Portfolio selector */}
-      <select
-        value={selectedPortfolioId ?? ""}
-        onChange={(e) => setSelectedPortfolioId(Number(e.target.value))}
-      >
-        {portfolios.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.name}
-          </option>
-        ))}
-      </select>
+      <main className="trading-main">
+        <h1 className="trading-title">Trading</h1>
+        <p className="trading-subtitle">Paper trading only. Practice without risking real money.</p>
 
-      {/* 🔹 Dashboard */}
-      {data && (
-        <>
-          <TradeForm
-            portfolioId={currentPortfolioId}
-            onTradeSuccess={() => refreshDashboard(currentPortfolioId)}
-          />
-          <PortfolioSummary data={data} />
-          <HoldingsTable data={data.holdings} />
-          <RecentTrades data={data.recentTrades} />
-        </>
+        {error && (
+          <p className="trade-form-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        {portfolios.length === 0 && (
+          <section className="empty-portfolio-card">
+            <h2>No portfolios yet</h2>
+            <p>Create a portfolio and follow at least one symbol to get started.</p>
+            <button type="button" className="btn btn-primary" onClick={() => setCreateModalOpen(true)}>
+              + Create portfolio
+            </button>
+          </section>
+        )}
+
+        {data && selectedPortfolioId !== null && (
+          <>
+            {!data.hasFollowedSymbols ? (
+              <EmptyPortfolioState
+                portfolioName={data.name}
+                onAddSymbols={() => setAddSymbolsModalOpen(true)}
+                onDeletePortfolio={() => void handleDeletePortfolio()}
+              />
+            ) : (
+              <>
+                <PortfolioSummary data={data} onAddCash={() => setAddCashModalOpen(true)} />
+
+                <div className="trading-tabs" role="tablist" aria-label="Portfolio sections">
+                  {TABS.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
+                      className={activeTab === tab.id ? "trading-tab active" : "trading-tab"}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div role="tabpanel">
+                  {activeTab === "summary" && (
+                    <SummaryTab
+                      rows={data.summary}
+                      news={data.news}
+                      onAddSymbol={() => setAddSymbolsModalOpen(true)}
+                    />
+                  )}
+                  {activeTab === "holdings" && (
+                    <HoldingsTab
+                      owned={data.holdings.filter((row) => row.shares > 0)}
+                      followedNotOwned={data.summary.filter((row) => {
+                        const holding = data.holdings.find((h) => h.symbol === row.symbol);
+                        return !holding || holding.shares === 0;
+                      })}
+                      onTrade={(symbol) => setTradeSymbol(symbol)}
+                    />
+                  )}
+                  {activeTab === "history" && <HistoryTab trades={data.trades} />}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {loading && portfolios.length > 0 && <p className="trade-form-hint">Refreshing...</p>}
+      </main>
+
+      <CreatePortfolioModal
+        open={createModalOpen}
+        title="Create portfolio"
+        submitLabel="Create portfolio"
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreatePortfolio}
+      />
+
+      <CreatePortfolioModal
+        open={addSymbolsModalOpen}
+        title="Add symbols"
+        submitLabel="Add symbols"
+        requireName={false}
+        onClose={() => setAddSymbolsModalOpen(false)}
+        onSubmit={handleAddSymbols}
+      />
+
+      <AddCashModal
+        open={addCashModalOpen}
+        onClose={() => setAddCashModalOpen(false)}
+        onSubmit={handleAddCash}
+      />
+
+      {selectedPortfolioId !== null && tradeSymbol && (
+        <InlineTradeModal
+          open
+          symbol={tradeSymbol}
+          portfolioId={selectedPortfolioId}
+          onClose={() => setTradeSymbol(null)}
+          onSuccess={() => refreshDashboard(selectedPortfolioId)}
+        />
       )}
     </div>
   );

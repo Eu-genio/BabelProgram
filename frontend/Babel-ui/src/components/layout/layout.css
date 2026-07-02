@@ -15,6 +15,10 @@
   padding: 0 1.5rem;
 }
 
+.main-content:has(.trading-layout) {
+  max-width: 1280px;
+}
+
 /* Navbar layout */
 .nav-inner {
   display: flex;
