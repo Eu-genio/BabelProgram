@@ -1,24 +1,49 @@
-.projects-title {
-  margin-top: 0;
-  margin-bottom: 2rem;
-  font-size: 2rem;
+.projects-page {
+  max-width: var(--portfolio-max-width);
+}
+
+.projects-grid {
+  display: grid;
+  gap: 1rem;
 }
 
 .project-card {
-  border: 1px solid #e5e5e5;
+  background: var(--portfolio-surface);
+  border: 1px solid var(--portfolio-border);
   padding: 1.5rem;
-  border-radius: 6px;
+  border-radius: var(--portfolio-radius);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+}
+
+.project-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .project-name {
   font-size: 1.4rem;
-  margin-bottom: 0.75rem;
+  margin: 0;
+}
+
+.project-badge {
+  display: inline-flex;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: var(--portfolio-accent-soft);
+  color: var(--portfolio-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .project-description {
   margin-bottom: 0.75rem;
-  line-height: 1.6;
-  color: #444;
+  line-height: 1.7;
+  color: var(--portfolio-muted);
 }
 
 .project-stack {
@@ -30,7 +55,18 @@
 
 .project-stack span {
   font-size: 0.8rem;
-  background: #f2f2f2;
+  background: #f8fafc;
+  border: 1px solid var(--portfolio-border);
   padding: 0.3rem 0.6rem;
-  border-radius: 4px;
+  border-radius: 999px;
+  color: var(--portfolio-text);
+  font-weight: 600;
+}
+
+.project-links {
+  margin-top: 1.25rem;
+}
+
+.project-links .btn-hero-primary {
+  text-decoration: none;
 }

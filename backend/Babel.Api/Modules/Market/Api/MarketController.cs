@@ -1,5 +1,6 @@
 using Babel.Api.Modules.Market.Application;
-using Babel.Api.Modules.Market.Domain;using Microsoft.AspNetCore.Authorization;
+using Babel.Api.Modules.Market.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Babel.Api.Modules.Market.Api;

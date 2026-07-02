@@ -1,0 +1,16 @@
+:root {
+  --portfolio-bg: #f3f5f9;
+  --portfolio-surface: #ffffff;
+  --portfolio-text: #0f172a;
+  --portfolio-muted: #64748b;
+  --portfolio-border: #e2e8f0;
+  --portfolio-accent: #7c3aed;
+  --portfolio-accent-soft: #ede9fe;
+  --portfolio-accent-2: #6366f1;
+  --portfolio-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  --portfolio-radius: 12px;
+  --portfolio-radius-lg: 16px;
+  --portfolio-max-width: 1180px;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+}

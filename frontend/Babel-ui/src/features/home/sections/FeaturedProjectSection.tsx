@@ -1,24 +1,31 @@
+import { Link } from "react-router-dom";
+import { useAuth } from "../../auth/context/AuthContext";
+import BabelDashboardPreview from "../components/BabelDashboardPreview";
 import "../home.css";
+
 export default function FeaturedProjectSection() {
+  const { token } = useAuth();
+
   return (
-    <section className="section">
-      <h2 className="section-title">Featured Project</h2>
+    <section className="featured-section">
+      <div className="featured-inner">
+        <header className="featured-header">
+          <div>
+            <span className="portfolio-page-eyebrow">Featured project</span>
+            <h2>Babel Trading Simulator</h2>
+            <p>
+              A full-stack paper trading platform built with ASP.NET Core and React. Portfolio
+              watchlists, trade execution, and live market data — designed as a modular monolith for
+              learning and demonstration.
+            </p>
+          </div>
+          <Link to={token ? "/trading" : "/login"} className="btn btn-hero-primary">
+            Try the simulator →
+          </Link>
+        </header>
 
-      <h3 className="project-title">Babel</h3>
-
-      <p className="text-body">
-        A full-stack trading simulator built with ASP.NET Core and React.
-      </p>
-
-      <p className="text-body">
-        Includes portfolio tracking, asset management, and a complete trade
-        execution engine.
-      </p>
-
-      <p className="text-muted text-body">
-        Designed using a modular monolith architecture with clean separation
-        across application layers.
-      </p>
+        <BabelDashboardPreview />
+      </div>
     </section>
   );
 }

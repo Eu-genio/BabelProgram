@@ -45,7 +45,7 @@ namespace Babel.Api.Modules.Users.Application
             return true;
         }
 
-        public async Task<User> UpdateByIdAsync(int id, string name, string email, UserRole role)
+        public async Task<User?> UpdateByIdAsync(int id, string name, string email, UserRole role)
         {
             var userToUpdate = await _db.Users.SingleOrDefaultAsync(user => user.Id == id);
 

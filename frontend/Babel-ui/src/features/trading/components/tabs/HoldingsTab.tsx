@@ -1,4 +1,5 @@
 import type { HoldingsRow, SummaryRow } from "../../../../lib/api/portfolioApi";
+import StockLogo from "../../../../components/StockLogo";
 import {
   colorClassForValue,
   formatCurrency,
@@ -47,7 +48,12 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
               )}
               {owned.map((row) => (
                 <tr key={row.symbol}>
-                  <td className="col-symbol">{row.symbol}</td>
+                  <td className="col-symbol">
+                    <div className="holding-symbol-cell">
+                      <StockLogo symbol={row.symbol} size={28} />
+                      {row.symbol}
+                    </div>
+                  </td>
                   <td>{formatCurrency(row.price)}</td>
                   <td className={colorClassForValue(row.change)}>{formatCurrency(row.change)}</td>
                   <td className={colorClassForValue(row.changePercent)}>
@@ -114,7 +120,12 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
               )}
               {followedNotOwned.map((row) => (
                 <tr key={row.symbol}>
-                  <td className="col-symbol">{row.symbol}</td>
+                  <td className="col-symbol">
+                    <div className="holding-symbol-cell">
+                      <StockLogo symbol={row.symbol} size={28} />
+                      {row.symbol}
+                    </div>
+                  </td>
                   <td>{formatCurrency(row.price)}</td>
                   <td className={colorClassForValue(row.change)}>{formatCurrency(row.change)}</td>
                   <td className={colorClassForValue(row.changePercent)}>

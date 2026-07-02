@@ -88,7 +88,10 @@ public class MarketViewService
         return _charts.GetChartAsync(symbol, range, cancellationToken);
     }
 
-    public Task<IReadOnlyList<SymbolSearchResult>> SearchSymbolsAsync(string query, int limit = 3)
+    public Task<IReadOnlyList<SymbolSearchResult>> SearchSymbolsAsync(
+        string query,
+        int limit = 3,
+        CancellationToken cancellationToken = default)
     {
         return Task.FromResult(PopularSymbolCatalog.Search(query, limit));
     }

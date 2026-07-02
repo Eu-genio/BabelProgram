@@ -418,6 +418,12 @@ td {
   font-weight: 600;
 }
 
+.holding-symbol-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .holdings-tab .portfolio-table .col-actions {
   width: 4.5rem;
 }

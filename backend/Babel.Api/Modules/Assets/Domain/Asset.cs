@@ -3,8 +3,8 @@
     public class Asset
     {
         public int Id { get; set; }
-        public string Symbol { get; set; }
-        public string Name { get; set; }
+        public string Symbol { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public AssetType Type { get; set; }
         public string Exchange { get; set; } = null!;
         public string Currency { get; set; } = "USD";

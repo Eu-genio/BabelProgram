@@ -25,7 +25,7 @@ function quoteColorClass(value: number): string {
   return "";
 }
 
-export default function MarketPage() {
+export default function MarketPage({ embedded = false }: { embedded?: boolean }) {
   const [symbolsInput, setSymbolsInput] = useState(getDefaultWatchlistInput);
   const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
   const [watchlist, setWatchlist] = useState<MarketQuote[]>([]);
@@ -34,14 +34,7 @@ export default function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const symbols = useMemo(
-    () =>
-      symbolsInput
-        .split(",")
-        .map((s) => s.trim().toUpperCase())
-        .filter(Boolean),
-    [symbolsInput]
-  );
+  const symbols = useMemo(() => parseWatchlistInput(symbolsInput), [symbolsInput]);
 
   async function loadData(activeSymbols: string[]) {
     setLoading(true);
@@ -81,11 +74,25 @@ export default function MarketPage() {
   }
 
   return (
-    <div className="trading-container">
-      <h1 className="trading-title">Market</h1>
-      <p className="trading-subtitle">
-        Delayed market data for learning purposes. Live quotes from Finnhub; charts from Yahoo Finance.
-      </p>
+    <div className={embedded ? "babel-markets" : "trading-container"}>
+      {!embedded && (
+        <>
+          <h1 className="trading-title">Market</h1>
+          <p className="trading-subtitle">
+            Delayed market data for learning purposes. Live quotes from Finnhub; charts from Yahoo Finance.
+          </p>
+        </>
+      )}
+      {embedded && (
+        <header className="babel-page-header">
+          <div>
+            <h1>Markets</h1>
+            <p className="babel-muted">
+              Delayed market data for learning. Quotes from Finnhub; charts from Yahoo Finance.
+            </p>
+          </div>
+        </header>
+      )}
 
       <section className="trade-form-section">
         <h2>Watchlist Setup</h2>
