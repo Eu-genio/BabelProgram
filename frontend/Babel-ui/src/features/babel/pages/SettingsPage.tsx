@@ -26,11 +26,11 @@ export default function SettingsPage() {
         <dl className="babel-settings-list">
           <div>
             <dt>Signed in as</dt>
-            <dd>{user?.email ?? "—"}</dd>
+            <dd>{user?.email ?? "N/A"}</dd>
           </div>
           <div>
             <dt>Active portfolio</dt>
-            <dd>{data?.name ?? "—"}</dd>
+            <dd>{data?.name ?? "N/A"}</dd>
           </div>
         </dl>
         <div className="babel-settings-actions">

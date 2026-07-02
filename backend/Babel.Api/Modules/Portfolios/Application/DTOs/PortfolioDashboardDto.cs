@@ -62,4 +62,5 @@ public class PortfolioNewsDto
     public string Source { get; set; } = null!;
     public string Url { get; set; } = null!;
     public DateTime PublishedAtUtc { get; set; }
+    public string? Summary { get; set; }
 }

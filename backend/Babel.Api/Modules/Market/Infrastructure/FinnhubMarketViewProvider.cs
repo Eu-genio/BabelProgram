@@ -62,6 +62,11 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
     {
         EnsureApiKey();
         var normalized = NormalizeSymbols(symbols);
+        if (normalized.Count == 0)
+        {
+            return [];
+        }
+
         var cacheKey = $"market:news:{string.Join(",", normalized)}";
 
         return await _cache.GetOrCreateAsync(cacheKey, async entry =>
@@ -70,6 +75,7 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
             var allItems = new List<MarketNewsItem>();
             var toDate = DateOnly.FromDateTime(DateTime.UtcNow);
             var fromDate = toDate.AddDays(-7);
+            var symbolSet = new HashSet<string>(normalized, StringComparer.OrdinalIgnoreCase);
 
             foreach (var symbol in normalized)
             {
@@ -77,34 +83,125 @@ public class FinnhubMarketViewProvider : IMarketViewProvider
                     $"company-news?symbol={symbol}&from={fromDate:yyyy-MM-dd}&to={toDate:yyyy-MM-dd}&token={_apiKey}";
                 using var document = await GetJsonDocumentAsync(url, cancellationToken);
 
-                foreach (var item in document.RootElement.EnumerateArray().Take(6))
+                foreach (var item in document.RootElement.EnumerateArray().Take(10))
                 {
-                    var headline = item.TryGetProperty("headline", out var h) ? h.GetString() : null;
-                    var source = item.TryGetProperty("source", out var s) ? s.GetString() : null;
-                    var articleUrl = item.TryGetProperty("url", out var u) ? u.GetString() : null;
-                    var unixTime = item.TryGetProperty("datetime", out var dt) ? dt.GetInt64() : 0;
+                    var parsed = ParseNewsItem(item, symbol);
+                    if (parsed is not null)
+                    {
+                        allItems.Add(parsed);
+                    }
+                }
+            }
 
-                    if (string.IsNullOrWhiteSpace(headline) || string.IsNullOrWhiteSpace(articleUrl))
+            foreach (var category in new[] { "general", "technology", "merger" })
+            {
+                var categoryUrl = $"news?category={category}&token={_apiKey}";
+                using var document = await GetJsonDocumentAsync(categoryUrl, cancellationToken);
+
+                foreach (var item in document.RootElement.EnumerateArray().Take(30))
+                {
+                    var related = item.TryGetProperty("related", out var relatedEl) ? relatedEl.GetString() : null;
+                    var matchedSymbol = MatchRelatedSymbol(related, symbolSet);
+                    if (matchedSymbol is null)
                     {
                         continue;
                     }
 
-                    var publishedAtUtc = DateTimeOffset.FromUnixTimeSeconds(unixTime).UtcDateTime;
-                    allItems.Add(new MarketNewsItem(
-                        Symbol: symbol,
-                        Headline: headline,
-                        Source: source ?? "Unknown",
-                        Url: articleUrl,
-                        PublishedAtUtc: publishedAtUtc
-                    ));
+                    var parsed = ParseNewsItem(item, matchedSymbol);
+                    if (parsed is not null)
+                    {
+                        allItems.Add(parsed);
+                    }
                 }
             }
 
-            return (IReadOnlyList<MarketNewsItem>)allItems
-                .OrderByDescending(n => n.PublishedAtUtc)
-                .Take(12)
-                .ToList();
+            return SelectDiverseNews(allItems, 12);
         }) ?? [];
+    }
+
+    private static MarketNewsItem? ParseNewsItem(JsonElement item, string symbol)
+    {
+        var headline = item.TryGetProperty("headline", out var h) ? h.GetString() : null;
+        var source = item.TryGetProperty("source", out var s) ? s.GetString() : null;
+        var articleUrl = item.TryGetProperty("url", out var u) ? u.GetString() : null;
+        var summary = item.TryGetProperty("summary", out var summaryEl) ? summaryEl.GetString() : null;
+        var unixTime = item.TryGetProperty("datetime", out var dt) ? dt.GetInt64() : 0;
+
+        if (string.IsNullOrWhiteSpace(headline) || string.IsNullOrWhiteSpace(articleUrl))
+        {
+            return null;
+        }
+
+        var publishedAtUtc = unixTime > 0
+            ? DateTimeOffset.FromUnixTimeSeconds(unixTime).UtcDateTime
+            : DateTime.UtcNow;
+
+        return new MarketNewsItem(
+            Symbol: symbol,
+            Headline: headline,
+            Source: source ?? "Unknown",
+            Url: articleUrl,
+            PublishedAtUtc: publishedAtUtc,
+            Summary: string.IsNullOrWhiteSpace(summary) ? null : summary
+        );
+    }
+
+    private static string? MatchRelatedSymbol(string? related, HashSet<string> symbols)
+    {
+        if (string.IsNullOrWhiteSpace(related))
+        {
+            return null;
+        }
+
+        foreach (var token in related.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var normalized = token.ToUpperInvariant();
+            if (symbols.Contains(normalized))
+            {
+                return normalized;
+            }
+        }
+
+        return null;
+    }
+
+    private static IReadOnlyList<MarketNewsItem> SelectDiverseNews(IEnumerable<MarketNewsItem> items, int limit)
+    {
+        var deduped = items
+            .GroupBy(n => n.Url, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.OrderByDescending(n => n.PublishedAtUtc).First())
+            .OrderByDescending(n => n.PublishedAtUtc)
+            .ToList();
+
+        var selected = new List<MarketNewsItem>();
+        var usedUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var group in deduped.GroupBy(n => n.Source, StringComparer.OrdinalIgnoreCase))
+        {
+            var item = group.First();
+            if (usedUrls.Add(item.Url))
+            {
+                selected.Add(item);
+            }
+        }
+
+        foreach (var item in deduped)
+        {
+            if (selected.Count >= limit)
+            {
+                break;
+            }
+
+            if (usedUrls.Add(item.Url))
+            {
+                selected.Add(item);
+            }
+        }
+
+        return selected
+            .OrderByDescending(n => n.PublishedAtUtc)
+            .Take(limit)
+            .ToList();
     }
 
     private async Task<MarketQuote?> GetQuoteAsync(string symbol, CancellationToken cancellationToken)

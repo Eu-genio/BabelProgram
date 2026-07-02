@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "../../../lib/api/client";
 import { submitTrade, type TradeSide } from "../../../lib/api/tradesApi";
 import { formatCurrency, formatDateTimeUtc } from "../utils/format";
@@ -7,17 +7,33 @@ type Props = {
   open: boolean;
   symbol: string;
   portfolioId: number;
+  initialSide?: TradeSide;
   onClose: () => void;
   onSuccess: () => Promise<void> | void;
 };
 
-export default function InlineTradeModal({ open, symbol, portfolioId, onClose, onSuccess }: Props) {
-  const [side, setSide] = useState<TradeSide>("buy");
+export default function InlineTradeModal({
+  open,
+  symbol,
+  portfolioId,
+  initialSide = "buy",
+  onClose,
+  onSuccess,
+}: Props) {
+  const [side, setSide] = useState<TradeSide>(initialSide);
   const [quantity, setQuantity] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [lastPrice, setLastPrice] = useState<number | null>(null);
   const [lastFilledAt, setLastFilledAt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setSide(initialSide);
+    setQuantity("");
+    setError(null);
+    setLastPrice(null);
+    setLastFilledAt(null);
+  }, [symbol, initialSide, open]);
 
   if (!open) return null;
 

@@ -2,7 +2,7 @@ import type { PortfolioNewsItem, SummaryRow } from "../../../../lib/api/portfoli
 import {
   colorClassForValue,
   formatCurrency,
-  formatDateTimeUtc,
+  formatRelativeTime,
   formatSignedPercent,
   formatVolume,
 } from "../../utils/format";
@@ -18,7 +18,7 @@ export default function SummaryTab({ rows, news, onAddSymbol }: Props) {
     <div className="summary-tab">
       <div className="section-toolbar">
         <h2 className="section-heading">Followed stocks</h2>
-        <button type="button" className="btn btn-primary" onClick={onAddSymbol}>
+        <button type="button" className="btn btn-babel-primary" onClick={onAddSymbol}>
           + Add symbol
         </button>
       </div>
@@ -61,21 +61,23 @@ export default function SummaryTab({ rows, news, onAddSymbol }: Props) {
         </table>
       </div>
 
-      <section className="summary-news-section">
+      <section className="summary-news-section portfolio-table-card">
         <h2 className="section-heading">News for your followed stocks</h2>
         {news.length === 0 ? (
           <p className="trade-form-hint">No recent news for your followed symbols.</p>
         ) : (
-          <ul className="summary-news-list">
+          <ul className="summary-news-grid">
             {news.map((item) => (
-              <li key={`${item.url}-${item.symbol}`} className="summary-news-item">
-                <span className="summary-news-symbol">{item.symbol}</span>
+              <li key={`${item.url}-${item.symbol}`} className="summary-news-card">
+                <div className="summary-news-card-top">
+                  <span className="summary-news-symbol">{item.symbol}</span>
+                  <span className="summary-news-source">{item.source}</span>
+                </div>
                 <a href={item.url} target="_blank" rel="noreferrer" className="summary-news-headline">
                   {item.headline}
                 </a>
-                <span className="summary-news-meta">
-                  {item.source} · {formatDateTimeUtc(item.publishedAtUtc)}
-                </span>
+                {item.summary && <p className="summary-news-summary">{item.summary}</p>}
+                <span className="summary-news-meta">{formatRelativeTime(item.publishedAtUtc)}</span>
               </li>
             ))}
           </ul>

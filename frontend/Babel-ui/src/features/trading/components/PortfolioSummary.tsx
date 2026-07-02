@@ -12,7 +12,7 @@ export default function PortfolioSummary({ data, onAddCash }: Props) {
       <div className="summary-card">
         <p>Cash</p>
         <h2>{formatCurrency(data.cash)}</h2>
-        <button type="button" className="btn btn-secondary summary-card-action" onClick={onAddCash}>
+        <button type="button" className="btn btn-babel-primary summary-card-action" onClick={onAddCash}>
           + Add cash
         </button>
       </div>

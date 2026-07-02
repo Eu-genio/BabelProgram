@@ -94,7 +94,7 @@ function BabelShellInner() {
               onSelect={setSelectedPortfolioId}
             />
           </div>
-          <p className="babel-topbar-hint">Paper trading — no real money</p>
+          <p className="babel-topbar-hint">Paper trading (no real money)</p>
         </header>
 
         <div className="babel-page">

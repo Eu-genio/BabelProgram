@@ -11,7 +11,7 @@ export default function EmptyPortfolioState({ portfolioName, onAddSymbols, onDel
       <h3>Your portfolio is empty</h3>
       <p>Add symbols to get news and analysis on your stocks and ETFs.</p>
       <div className="empty-portfolio-card-actions">
-        <button type="button" className="btn btn-primary" onClick={onAddSymbols}>
+        <button type="button" className="btn btn-babel-primary" onClick={onAddSymbols}>
           + Add symbols
         </button>
         <button type="button" className="btn btn-danger-outline" onClick={onDeletePortfolio}>

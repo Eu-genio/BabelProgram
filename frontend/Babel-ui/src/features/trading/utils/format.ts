@@ -5,6 +5,10 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+export function formatEmptyValue(): string {
+  return "N/A";
+}
+
 export function formatCurrency(value: number): string {
   return currencyFormatter.format(value);
 }
@@ -24,14 +28,34 @@ const dateTimeUtcFormatter = new Intl.DateTimeFormat("en-US", {
 export function formatDateTimeUtc(isoOrMs: string | number | Date): string {
   const d = typeof isoOrMs === "string" || typeof isoOrMs === "number" ? new Date(isoOrMs) : isoOrMs;
   if (Number.isNaN(d.getTime())) {
-    return "—";
+    return formatEmptyValue();
   }
   return `${dateTimeUtcFormatter.format(d)} UTC`;
 }
 
+export function formatRelativeTime(isoOrMs: string | number | Date): string {
+  const d = typeof isoOrMs === "string" || typeof isoOrMs === "number" ? new Date(isoOrMs) : isoOrMs;
+  if (Number.isNaN(d.getTime())) {
+    return formatEmptyValue();
+  }
+
+  const diffMs = Date.now() - d.getTime();
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+
+  return dateTimeUtcFormatter.format(d);
+}
+
 export function formatVolume(value: number | null | undefined): string {
   if (value === null || value === undefined) {
-    return "—";
+    return formatEmptyValue();
   }
 
   return new Intl.NumberFormat("en-US", {

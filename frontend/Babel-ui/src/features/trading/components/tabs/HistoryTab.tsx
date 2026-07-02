@@ -1,5 +1,5 @@
 import type { DashboardTrade } from "../../../../lib/api/portfolioApi";
-import { formatCurrency, formatDateTimeUtc, formatQuantity } from "../../utils/format";
+import { formatCurrency, formatDateTimeUtc, formatEmptyValue, formatQuantity } from "../../utils/format";
 
 type Props = {
   trades: DashboardTrade[];
@@ -32,7 +32,7 @@ export default function HistoryTab({ trades }: Props) {
               <td>{formatQuantity(t.quantity)}</td>
               <td>{formatCurrency(t.price)}</td>
               <td>{formatDateTimeUtc(t.executedAtUtc)}</td>
-              <td>{t.quoteAsOfUtc ? formatDateTimeUtc(t.quoteAsOfUtc) : "—"}</td>
+              <td>{t.quoteAsOfUtc ? formatDateTimeUtc(t.quoteAsOfUtc) : formatEmptyValue()}</td>
             </tr>
           ))}
         </tbody>

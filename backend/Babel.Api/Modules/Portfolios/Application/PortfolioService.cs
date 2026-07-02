@@ -192,7 +192,8 @@ public class PortfolioService
                     Headline = n.Headline,
                     Source = n.Source,
                     Url = n.Url,
-                    PublishedAtUtc = n.PublishedAtUtc
+                    PublishedAtUtc = n.PublishedAtUtc,
+                    Summary = n.Summary
                 })
                 .ToList();
 

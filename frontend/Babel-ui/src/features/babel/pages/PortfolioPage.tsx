@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { TradeSide } from "../../../lib/api/tradesApi";
 import {
   addPortfolioSymbols,
   createPortfolio,
@@ -40,6 +41,7 @@ export default function PortfolioPage() {
   const [addSymbolsModalOpen, setAddSymbolsModalOpen] = useState(false);
   const [addCashModalOpen, setAddCashModalOpen] = useState(false);
   const [tradeSymbol, setTradeSymbol] = useState<string | null>(null);
+  const [tradeSide, setTradeSide] = useState<TradeSide>("buy");
 
   async function handleCreatePortfolio(name: string, symbols: string[]) {
     const created = await createPortfolio({ name, symbols });
@@ -72,9 +74,20 @@ export default function PortfolioPage() {
           <h1>Portfolio</h1>
           <p className="babel-muted">Manage watchlists, holdings, and trades.</p>
         </div>
-        <button type="button" className="btn btn-babel-secondary" onClick={() => setCreateModalOpen(true)}>
-          + New portfolio
-        </button>
+        <div className="babel-page-header-actions">
+          {selectedPortfolioId !== null && portfolios.length > 0 && (
+            <button
+              type="button"
+              className="btn btn-babel-danger"
+              onClick={() => void handleDeletePortfolio()}
+            >
+              Delete portfolio
+            </button>
+          )}
+          <button type="button" className="btn btn-babel-primary" onClick={() => setCreateModalOpen(true)}>
+            + New portfolio
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -135,7 +148,10 @@ export default function PortfolioPage() {
                       const holding = data.holdings.find((h) => h.symbol === row.symbol);
                       return !holding || holding.shares === 0;
                     })}
-                    onTrade={(symbol) => setTradeSymbol(symbol)}
+                    onTrade={(symbol, side) => {
+                      setTradeSide(side);
+                      setTradeSymbol(symbol);
+                    }}
                   />
                 )}
                 {activeTab === "history" && <HistoryTab trades={data.trades} />}
@@ -175,6 +191,7 @@ export default function PortfolioPage() {
           open
           symbol={tradeSymbol}
           portfolioId={selectedPortfolioId}
+          initialSide={tradeSide}
           onClose={() => setTradeSymbol(null)}
           onSuccess={() => refreshDashboard()}
         />

@@ -30,4 +30,5 @@ public record MarketNewsItem(
     string Headline,
     string Source,
     string Url,
-    DateTime PublishedAtUtc);
+    DateTime PublishedAtUtc,
+    string? Summary = null);

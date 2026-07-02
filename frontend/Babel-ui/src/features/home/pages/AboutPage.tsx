@@ -16,7 +16,7 @@ export default function AboutPage() {
         <p>
           After graduating from Maynooth University with a 2:1 in Computer Science and Software
           Engineering, I joined FNZ in the Czech Republic as a Technology Solutions Graduate. My
-          role spanned development, QA, and production support — giving me a practical view of how
+          role spanned development, QA, and production support, giving me a practical view of how
           software behaves outside the IDE.
         </p>
         <p>
@@ -26,7 +26,7 @@ export default function AboutPage() {
           systems stable.
         </p>
         <p>
-          At Maynooth I explored machine learning, computer vision, networks, and NLP — including a
+          At Maynooth I explored machine learning, computer vision, networks, and NLP, including a
           year-long internship at Oracle. I enjoy building modular, explainable systems and learning
           tools that solve real problems.
         </p>

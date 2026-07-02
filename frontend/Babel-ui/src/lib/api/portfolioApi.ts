@@ -49,6 +49,7 @@ export type PortfolioNewsItem = {
   source: string;
   url: string;
   publishedAtUtc: string;
+  summary?: string | null;
 };
 
 export type PortfolioDashboardResponse = {

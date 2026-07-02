@@ -1,8 +1,10 @@
 import type { HoldingsRow, SummaryRow } from "../../../../lib/api/portfolioApi";
+import type { TradeSide } from "../../../../lib/api/tradesApi";
 import StockLogo from "../../../../components/StockLogo";
 import {
   colorClassForValue,
   formatCurrency,
+  formatEmptyValue,
   formatQuantity,
   formatSignedCurrency,
   formatSignedPercent,
@@ -12,7 +14,7 @@ import {
 type Props = {
   owned: HoldingsRow[];
   followedNotOwned: SummaryRow[];
-  onTrade: (symbol: string) => void;
+  onTrade: (symbol: string, side: TradeSide) => void;
 };
 
 export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props) {
@@ -68,7 +70,7 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
                   <td className={colorClassForValue(row.todaysGainPercent)}>
                     {formatSignedPercent(row.todaysGainPercent)}
                   </td>
-                  <td>{row.estAnnualIncome != null ? formatCurrency(row.estAnnualIncome) : "—"}</td>
+                  <td>{row.estAnnualIncome != null ? formatCurrency(row.estAnnualIncome) : formatEmptyValue()}</td>
                   <td className={colorClassForValue(row.totalChange)}>
                     {formatSignedCurrency(row.totalChange)}
                   </td>
@@ -77,13 +79,22 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
                   </td>
                   <td>{formatCurrency(row.value)}</td>
                   <td className="col-actions">
-                    <button
-                      type="button"
-                      className="btn btn-secondary trade-inline-btn"
-                      onClick={() => onTrade(row.symbol)}
-                    >
-                      Buy / Sell
-                    </button>
+                    <div className="trade-action-group">
+                      <button
+                        type="button"
+                        className="btn btn-primary trade-inline-btn"
+                        onClick={() => onTrade(row.symbol, "buy")}
+                      >
+                        Buy
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary trade-inline-btn"
+                        onClick={() => onTrade(row.symbol, "sell")}
+                      >
+                        Sell
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -93,7 +104,7 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
       </section>
 
       <section className="portfolio-table-card">
-        <h2 className="section-heading">Followed — not owned</h2>
+        <h2 className="section-heading">Followed, not owned</h2>
         <p className="trade-form-hint holdings-section-hint">
           Symbols you follow but haven&apos;t bought yet.
         </p>
@@ -139,7 +150,7 @@ export default function HoldingsTab({ owned, followedNotOwned, onTrade }: Props)
                     <button
                       type="button"
                       className="btn btn-primary trade-inline-btn"
-                      onClick={() => onTrade(row.symbol)}
+                      onClick={() => onTrade(row.symbol, "buy")}
                     >
                       Buy
                     </button>

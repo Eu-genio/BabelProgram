@@ -15,7 +15,7 @@ export default function FeaturedProjectSection() {
             <h2>Babel Trading Simulator</h2>
             <p>
               A full-stack paper trading platform built with ASP.NET Core and React. Portfolio
-              watchlists, trade execution, and live market data — designed as a modular monolith for
+              watchlists, trade execution, and live market data, designed as a modular monolith for
               learning and demonstration.
             </p>
           </div>

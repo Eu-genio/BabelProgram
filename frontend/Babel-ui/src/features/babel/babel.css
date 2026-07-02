@@ -457,6 +457,24 @@
   color: var(--babel-muted);
 }
 
+.btn-babel-danger {
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #fca5a5;
+}
+
+.btn-babel-danger:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: #f87171;
+}
+
+.babel-page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 /* Dark overrides for shared trading components inside babel app */
 .babel-app .trading-title,
 .babel-app .trading-subtitle {
@@ -535,6 +553,29 @@
   background: transparent;
   border-color: var(--babel-border);
   color: var(--babel-text);
+}
+
+.babel-app .summary-news-card {
+  background: var(--babel-surface-2);
+  border-color: var(--babel-border);
+}
+
+.babel-app .summary-news-symbol {
+  color: var(--babel-text);
+}
+
+.babel-app .summary-news-source {
+  background: var(--babel-surface);
+  color: var(--babel-muted);
+}
+
+.babel-app .summary-news-headline {
+  color: #a5b4fc;
+}
+
+.babel-app .summary-news-summary,
+.babel-app .summary-news-meta {
+  color: var(--babel-muted);
 }
 
 .babel-markets .trade-form-section,
