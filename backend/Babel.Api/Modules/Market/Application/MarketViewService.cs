@@ -12,15 +12,18 @@ public class MarketViewService
     private readonly IMarketViewProvider _provider;
     private readonly IMarketChartProvider _charts;
     private readonly IStockSnapshotProvider _snapshots;
+    private readonly INewsService _news;
 
     public MarketViewService(
         IMarketViewProvider provider,
         IMarketChartProvider charts,
-        IStockSnapshotProvider snapshots)
+        IStockSnapshotProvider snapshots,
+        INewsService news)
     {
         _provider = provider;
         _charts = charts;
         _snapshots = snapshots;
+        _news = news;
     }
 
     public Task<IReadOnlyList<MarketQuote>> GetWatchlistAsync(IEnumerable<string> symbols, CancellationToken cancellationToken = default)
@@ -80,7 +83,7 @@ public class MarketViewService
 
     public Task<IReadOnlyList<MarketNewsItem>> GetNewsAsync(IEnumerable<string> symbols, CancellationToken cancellationToken = default)
     {
-        return _provider.GetNewsAsync(symbols, cancellationToken);
+        return _news.GetNewsAsync(symbols, cancellationToken);
     }
 
     public Task<MarketChart?> GetChartAsync(string symbol, string range, CancellationToken cancellationToken = default)

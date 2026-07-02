@@ -18,6 +18,7 @@ export type MarketNewsItem = {
   source: string;
   url: string;
   publishedAtUtc: string;
+  summary?: string | null;
 };
 
 export type ChartRange = "1D" | "1W" | "1M" | "3M" | "1Y";
