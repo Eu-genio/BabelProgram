@@ -1,4 +1,4 @@
-namespace Babel.Api.Modules.Market.Infrastructure;
+namespace Babel.Api.Modules.Market.Infrastructure.News;
 
 /// <summary>
 /// Tracks Marketaux API usage per UTC day so the free tier budget is shared across all users.

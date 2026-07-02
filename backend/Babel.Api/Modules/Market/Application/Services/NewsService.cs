@@ -1,8 +1,10 @@
+using Babel.Api.Modules.Market.Application.Abstractions;
+using Babel.Api.Modules.Market.Application.Helpers;
 using Babel.Api.Modules.Market.Domain;
-using Babel.Api.Modules.Market.Infrastructure;
+using Babel.Api.Modules.Market.Infrastructure.News;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Babel.Api.Modules.Market.Application;
+namespace Babel.Api.Modules.Market.Application.Services;
 
 public class NewsService : INewsService
 {

@@ -1,4 +1,4 @@
-namespace Babel.Api.Modules.Market.Application;
+namespace Babel.Api.Modules.Market.Application.Helpers;
 
 public record SymbolSearchResult(string Symbol, string Name);
 

@@ -1,4 +1,6 @@
-using Babel.Api.Modules.Market.Application;
+using Babel.Api.Modules.Market.Application.Abstractions;
+using Babel.Api.Modules.Market.Application.Helpers;
+using Babel.Api.Modules.Market.Application.Services;
 using Babel.Api.Modules.Market.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

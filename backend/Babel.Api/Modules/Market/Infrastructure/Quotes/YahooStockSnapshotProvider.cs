@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Babel.Api.Modules.Market.Application;
+using Babel.Api.Modules.Market.Application.Abstractions;
 using Babel.Api.Modules.Market.Domain;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Babel.Api.Modules.Market.Infrastructure;
+namespace Babel.Api.Modules.Market.Infrastructure.Quotes;
 
 public class YahooStockSnapshotProvider : IStockSnapshotProvider
 {

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Babel.Api.Modules.Market.Domain;
 
-namespace Babel.Api.Modules.Market.Infrastructure;
+namespace Babel.Api.Modules.Market.Infrastructure.News;
 
 public class YahooFinanceNewsProvider
 {

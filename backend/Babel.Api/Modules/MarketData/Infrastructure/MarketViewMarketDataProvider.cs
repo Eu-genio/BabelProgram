@@ -1,4 +1,4 @@
-using Babel.Api.Modules.Market.Application;
+using Babel.Api.Modules.Market.Application.Abstractions;
 using Babel.Api.Modules.MarketData.Application;
 using Babel.Api.Modules.MarketData.Domain;
 

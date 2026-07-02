@@ -1,6 +1,7 @@
 ﻿using Babel.Api.Modules.Assets.Domain;
 using Babel.Api.Modules.Assets.Infrastructure;
-using Babel.Api.Modules.Market.Application;
+using Babel.Api.Modules.Market.Application.Abstractions;
+using Babel.Api.Modules.Market.Application.Services;
 using Babel.Api.Modules.Portfolios.Application.DTOs;
 using Babel.Api.Modules.Portfolios.Domain;
 using Babel.Api.Modules.Portfolios.Infrastructure;

@@ -1,6 +1,8 @@
+using Babel.Api.Modules.Market.Application.Abstractions;
+using Babel.Api.Modules.Market.Application.Helpers;
 using Babel.Api.Modules.Market.Domain;
 
-namespace Babel.Api.Modules.Market.Application;
+namespace Babel.Api.Modules.Market.Application.Services;
 
 public class MarketViewService
 {
